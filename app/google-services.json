@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "970733954535",
+    "project_id": "six-times-228d1",
+    "storage_bucket": "six-times-228d1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970733954535:android:23fbf3ccebca90f9b28942",
+        "android_client_info": {
+          "package_name": "com.example.a6times"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDODJlfP6ZHMCzrnaWXtOEB6Gw59qdlGw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

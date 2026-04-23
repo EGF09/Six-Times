@@ -15,7 +15,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="75dp"
         android:gravity="right|center_vertical"
-        android:text="Kullanıcı Adı: "
+        android:text="Kullanıcı Adı:     "
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,6 +30,7 @@
         android:inputType="text"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -43,4 +44,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextText2" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#ff6750a4"
+        android:tint="#FFFFFF"
+        app:srcCompat="@drawable/ic_back"
+        tools:layout_editor_absoluteX="-5dp"
+        tools:layout_editor_absoluteY="-6dp" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="21dp"
+        android:layout_height="17dp"
+        android:tint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView"
+        app:srcCompat="@drawable/account"
+        tools:layout_editor_absoluteX="-5dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
