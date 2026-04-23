@@ -36,6 +36,5 @@ class MainActivity : AppCompatActivity() {
             val forgotIntent = Intent(this, ForgotActivity::class.java)
             startActivity(forgotIntent)
         }
-
     }
 }
