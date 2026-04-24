@@ -18,6 +18,7 @@
         android:inputType="text"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -60,38 +61,66 @@
         android:id="@+id/textView3"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="3dp"
         android:layout_marginTop="98dp"
         android:gravity="right|center_vertical"
-        android:text="Kullanıcı Adı: "
+        android:text="Kullanıcı Adı:     "
         android:textColor="#FFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/editTextText"
+        app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="44dp"
         android:gravity="right|center_vertical"
-        android:text="Şifre: "
+        android:text="Şifre:  "
+        android:textAlignment="viewStart"
         android:textColor="#FFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <EditText
         android:id="@+id/editTextTextPassword"
         android:layout_width="236dp"
         android:layout_height="50dp"
-        android:layout_marginStart="25dp"
         android:layout_marginTop="44dp"
         android:layout_marginEnd="34dp"
         android:ems="10"
         android:inputType="textPassword"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="21dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="7dp"
+        android:tint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/textView4"
+        app:layout_constraintEnd_toStartOf="@+id/textView4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView4"
+        app:srcCompat="@drawable/lock" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="21dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="7dp"
+        android:tint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+        app:layout_constraintEnd_toStartOf="@+id/textView3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView3"
+        app:srcCompat="@drawable/account" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

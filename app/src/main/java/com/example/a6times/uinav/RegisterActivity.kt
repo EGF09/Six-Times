@@ -1,4 +1,5 @@
 package com.example.a6times.uinav
+
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -6,6 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.a6times.R
 import android.widget.Button
+import android.widget.ImageButton
 
 class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +20,13 @@ class RegisterActivity : AppCompatActivity() {
             insets
         }
 
-        val ConfirmRegisterButton = findViewById<Button>(R.id.ConfirmRegisterButton)
-        ConfirmRegisterButton.setOnClickListener {
+        val confirmRegisterButton = findViewById<Button>(R.id.ConfirmRegisterButton)
+        confirmRegisterButton.setOnClickListener {
+            finish()
+        }
+        
+        val RegisterBackButton = findViewById<ImageButton>(R.id.RegisterBackButton)
+        RegisterBackButton.setOnClickListener {
             finish()
         }
     }
