@@ -11,26 +11,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme._6Times">
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AnalysisActivity"
+            android:exported="false" />
+
+        <activity android:name=".ExamActivity" android:exported="false" />
+
         <activity
             android:name=".uinav.RegisterActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddWordActivity"
+            android:exported="false" />
+
         <activity
             android:name=".uinav.ForgotActivity"
             android:exported="false" />
+
         <activity
             android:name=".uinav.ApprovePasswordActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
     </application>
-
 </manifest>
