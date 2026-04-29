@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.a6times.menunav.AnalysisActivity
 import com.google.android.material.button.MaterialButton
 
 class ExamActivity : AppCompatActivity() {

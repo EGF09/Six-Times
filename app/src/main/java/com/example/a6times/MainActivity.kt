@@ -4,8 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.a6times.uinav.ForgotActivity
-import com.example.a6times.uinav.RegisterActivity
+import com.example.a6times.menunav.HomeActivity
+import com.example.a6times.loginnav.ForgotActivity
+import com.example.a6times.loginnav.RegisterActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +15,7 @@ class MainActivity : AppCompatActivity() {
 
         val loginButton = findViewById<Button>(R.id.GirisYapButton)
         loginButton.setOnClickListener {
-            val intent = Intent(this, com.example.a6times.HomeActivity::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
         }
 

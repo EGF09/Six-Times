@@ -1,9 +1,11 @@
-package com.example.a6times
+package com.example.a6times.menunav
 
-import android.widget.ImageView
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.a6times.ExamActivity
+import com.example.a6times.R
 import com.google.android.material.button.MaterialButton
 
 class HomeActivity : AppCompatActivity() {

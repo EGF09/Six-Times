@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#040303"
-    tools:context=".uinav.ForgotActivity">
+    tools:context=".loginnav.ForgotActivity">
 
     <TextView
         android:id="@+id/textView"

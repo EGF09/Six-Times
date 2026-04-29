@@ -1,4 +1,4 @@
-package com.example.a6times.uinav
+package com.example.a6times.loginnav
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,7 +23,7 @@ class ForgotActivity : AppCompatActivity() {
 
         val approvePasswordButton = findViewById<Button>(R.id.ChangePasswordButton)
         approvePasswordButton.setOnClickListener {
-            val approveIntent = Intent(this, com.example.a6times.uinav.ApprovePasswordActivity::class.java)
+            val approveIntent = Intent(this, com.example.a6times.loginnav.ApprovePasswordActivity::class.java)
             startActivity(approveIntent)
             finish()
         }

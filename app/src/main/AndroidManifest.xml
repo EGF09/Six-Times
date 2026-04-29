@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,33 +13,33 @@
         android:theme="@style/Theme._6Times">
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".menunav.SettingsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".AnalysisActivity"
+            android:name=".menunav.AnalysisActivity"
             android:exported="false" />
 
         <activity android:name=".ExamActivity" android:exported="false" />
 
         <activity
-            android:name=".uinav.RegisterActivity"
+            android:name=".loginnav.RegisterActivity"
             android:exported="false" />
 
         <activity
-            android:name=".HomeActivity"
+            android:name=".menunav.HomeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".AddWordActivity"
+            android:name=".menunav.AddWordActivity"
             android:exported="false" />
 
         <activity
-            android:name=".uinav.ForgotActivity"
+            android:name=".loginnav.ForgotActivity"
             android:exported="false" />
 
         <activity
-            android:name=".uinav.ApprovePasswordActivity"
+            android:name=".loginnav.ApprovePasswordActivity"
             android:exported="false" />
 
         <activity

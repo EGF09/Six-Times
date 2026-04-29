@@ -1,4 +1,4 @@
-package com.example.a6times
+package com.example.a6times.menunav
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,8 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.a6times.MainActivity
+import com.example.a6times.R
 import com.google.android.material.button.MaterialButton
 
 class SettingsActivity : AppCompatActivity() {
