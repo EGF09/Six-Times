@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.a6times.ExamActivity
 import com.example.a6times.R
+import com.example.a6times.WordActivity // WordActivity'yi import etmeyi unutma
 import com.google.android.material.button.MaterialButton
 
 class HomeActivity : AppCompatActivity() {
@@ -14,7 +15,6 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
         val ivSettings = findViewById<ImageView>(R.id.ivSettings)
-
         ivSettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
@@ -33,6 +33,12 @@ class HomeActivity : AppCompatActivity() {
         val btnAnalysis = findViewById<MaterialButton>(R.id.btnAnalysis)
         btnAnalysis.setOnClickListener {
             startActivity(Intent(this, AnalysisActivity::class.java))
+        }
+
+        val btnMyWords = findViewById<MaterialButton>(R.id.btnMyWords)
+        btnMyWords.setOnClickListener {
+            val intent = Intent(this, WordActivity::class.java)
+            startActivity(intent)
         }
     }
 }

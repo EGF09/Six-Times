@@ -42,6 +42,8 @@
             android:name=".loginnav.ApprovePasswordActivity"
             android:exported="false" />
 
+        <activity android:name=".WordActivity" android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

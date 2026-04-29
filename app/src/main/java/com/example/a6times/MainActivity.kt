@@ -13,22 +13,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val loginButton = findViewById<Button>(R.id.GirisYapButton)
-        loginButton.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
+        findViewById<Button>(R.id.GirisYapButton)?.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
         }
 
-        val registerButton = findViewById<Button>(R.id.KayitOlButton)
-        registerButton.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+
+        findViewById<Button>(R.id.KayitOlButton)?.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        val forgotButton = findViewById<Button>(R.id.SifremiUnuttumButton)
-        forgotButton.setOnClickListener {
-            val intent = Intent(this, ForgotActivity::class.java)
-            startActivity(intent)
+        findViewById<Button>(R.id.SifremiUnuttumButton)?.setOnClickListener {
+            startActivity(Intent(this, ForgotActivity::class.java))
         }
+
     }
 }
