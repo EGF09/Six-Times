@@ -103,6 +103,7 @@ class AddWordActivity : AppCompatActivity() {
             etEngWord.text.clear()
             etTurWord.text.clear()
             etCategory.text.clear()
+            findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.GONE
 
         }
 
