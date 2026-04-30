@@ -7,9 +7,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.a6times.R
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
+import androidx.lifecycle.lifecycleScope
+import com.example.a6times.data.Users
+import com.example.a6times.data.UsersRepository
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class RegisterActivity : AppCompatActivity() {
+    private val userRepo = UsersRepository()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,13 +32,70 @@ class RegisterActivity : AppCompatActivity() {
 
         val confirmRegisterButton = findViewById<Button>(R.id.ConfirmRegisterButton)
         confirmRegisterButton.setOnClickListener {
-            finish()
+            //User Register
+            registerUser()
         }
         
         val RegisterBackButton = findViewById<ImageButton>(R.id.RegisterBackButton)
         RegisterBackButton.setOnClickListener {
             finish()
         }
+    }
+
+
+    fun registerUser(){
+        val userNameInput = findViewById<EditText>(R.id.editTextText8)
+        val userPassword = findViewById<EditText>(R.id.editTextTextPassword2)
+        val userPasswordAgain = findViewById<EditText>(R.id.editTextTextPassword3)
+
+        //password check
+        if (userPassword.text.toString() != userPasswordAgain.text.toString()){
+            MaterialAlertDialogBuilder(this@RegisterActivity) // Activity ismini buraya yazın
+                .setTitle("Hata")
+                .setMessage("Parola dogrulanmadi!")
+                .setPositiveButton("Tamam") { dialog, _ ->
+                    dialog.dismiss()
+                    finish()
+                }
+                .setCancelable(false)
+                .show()
+            return
+        }
+
+        val securePassword = userPassword.text.toString().toSHA256()
+
+        val newUser = Users(
+            userName = userNameInput.text.toString(),
+            userPassword = securePassword
+        )
+
+        lifecycleScope.launch {
+            val result = userRepo.saveUser(newUser)
+
+            result.onSuccess {
+                MaterialAlertDialogBuilder(this@RegisterActivity) // Activity ismini buraya yazın
+                    .setTitle("Başarılı")
+                    .setMessage("Kullanıcı kaydı başarıyla tamamlandı!")
+                    .setPositiveButton("Tamam") { dialog, _ ->
+                        // İstersen burada başka bir sayfaya yönlendirebilirsin
+                        dialog.dismiss()
+                        finish()
+                    }
+                    .setCancelable(false) // Kullanıcı dışarı tıklayıp kapatamasın, butona basmalı
+                    .show()
+            }.onFailure { error ->
+                MaterialAlertDialogBuilder(this@RegisterActivity)
+                    .setTitle("Bir Hata Oluştu")
+                    .setMessage("Hata: ${error.message}")
+                    .setPositiveButton("Anladım", null)
+                    .show()
+            }
+        }
+    }
+
+    fun String.toSHA256(): String{
+        val bytes = MessageDigest.getInstance("SHA-256").digest(this.toByteArray())
+        return bytes.joinToString(""){"%02x".format(it)}
     }
 
 }
