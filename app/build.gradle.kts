@@ -52,5 +52,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
 
+    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+
 
 }
