@@ -9,10 +9,12 @@ class WordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_word)
 
+        //region Back Button
         val btnBack = findViewById<ImageButton>(R.id.WordBackButton)
         btnBack.setOnClickListener {
             finish()
         }
+        //endregion
 
     }
 }

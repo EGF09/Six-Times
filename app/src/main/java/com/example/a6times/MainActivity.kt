@@ -13,18 +13,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.GirisYapButton)?.setOnClickListener {
+        //region Login Button Function
+        findViewById<Button>(R.id.GirisYapButton)?.setOnClickListener {//Giriş Yap Butonu
             startActivity(Intent(this, HomeActivity::class.java))
         }
+        //endregion
 
-
+        //region Register Button Function
         findViewById<Button>(R.id.KayitOlButton)?.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+        //endregion
 
+        //region Forgot Password Button Function
         findViewById<Button>(R.id.SifremiUnuttumButton)?.setOnClickListener {
             startActivity(Intent(this, ForgotActivity::class.java))
         }
-
+        //endregion
     }
 }

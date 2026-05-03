@@ -15,10 +15,9 @@ class WordsRepository {
 
     fun addWord(word: Words, onComplete: (Boolean, String?) -> Unit) {
 
-        // 1. Transaction başlatıyoruz (Aynı anda gelen istekleri sıraya sokar)
         counterRef.runTransaction(object : Transaction.Handler {
 
-            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {//id sayısını 0 dan başlatarak 1 artıran fonksiyon
                 val currentId = mutableData.getValue(Int::class.java)
 
                 val nextId = if (currentId == null) {
@@ -27,7 +26,7 @@ class WordsRepository {
                     currentId + 1 // Doluysa 1 artır
                 }
 
-                mutableData.value = nextId
+                mutableData.value = nextId//Yeni sayıyı kaydeder
                 return Transaction.success(mutableData)
             }
 
@@ -37,13 +36,13 @@ class WordsRepository {
                 currentData: DataSnapshot?
             ) {
                 if (committed && currentData != null) {
-                    // 2. Transaction başarılı oldu, yeni ID'mizi aldık
+                    //Transaction başarılı oldu, yeni ID'mizi aldık
                     val newId = currentData.getValue(Int::class.java) ?: 0
 
-                    // 3. Objenin içindeki wordID'yi bu yeni ID ile güncelliyoruz
+                    //Objenin içindeki wordID'yi bu yeni ID ile güncelliyoruz
                     word.wordID = newId
 
-                    // 4. Kelimeyi kendi numarasıyla (0, 1, 2..) Words klasörüne kaydediyoruz
+                    // 4. Kelimeyi kendi Id'si ile (0, 1, 2..) Words klasörüne kaydediyoruz
                     database.child(newId.toString()).setValue(word)
                         .addOnSuccessListener {
                             onComplete(true, "Kelime eklendi. Yeni ID: $newId")

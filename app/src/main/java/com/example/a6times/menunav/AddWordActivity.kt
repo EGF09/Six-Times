@@ -19,8 +19,9 @@ class AddWordActivity : AppCompatActivity() {
     private val wordRepo = WordsRepository()
     private var selectedImageUri: Uri? = null
 
-
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    //region ImagePicker function
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             selectedImageUri = uri
             Toast.makeText(this, "Resim seçildi!", Toast.LENGTH_SHORT).show()
@@ -30,6 +31,10 @@ class AddWordActivity : AppCompatActivity() {
             Toast.makeText(this, "Resim seçilmedi!", Toast.LENGTH_SHORT).show()
         }
     }
+    //endregion
+
+
+    //region Activity Functions
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -39,74 +44,83 @@ class AddWordActivity : AppCompatActivity() {
         val etTurWord = findViewById<EditText>(R.id.etTurWord)
         val etCategory = findViewById<EditText>(R.id.etCategory)
 
+        val btnBack = findViewById<ImageButton>(R.id.btnBack)
+        val btnSelectImage = findViewById<Button>(R.id.btnSelectImage)
+        val btnSave = findViewById<Button>(R.id.btnSaveWord)
 
         //region Back Btn Functions
-        val btnBack = findViewById<ImageButton>(R.id.btnBack)
         btnBack.setOnClickListener {
             finish()
         }
         //endregion
 
-        val btnSelectImage = findViewById<Button>(R.id.btnSelectImage)
+        //region ImagePicker Button
         btnSelectImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
+        //endregion
 
-        val btnSave = findViewById<Button>(R.id.btnSaveWord)
-
-
-
+        //region Save Btn Functions
         btnSave.setOnClickListener {
+
             val engWordInput = etEngWord.text.toString().trim()
             val turWordInput = etTurWord.text.toString().trim()
             val categoryInput = etCategory.text.toString().trim()
             val picturePath = selectedImageUri?.toString() ?: ""
 
-            if (engWordInput.isEmpty()|| turWordInput.isEmpty()) {
+            if (engWordInput.isEmpty()|| turWordInput.isEmpty()) {//Blank check
                 Toast.makeText(this, "Lütfen tüm alanları doldurun.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val newWord = Words(
+            val newWord = Words(//New word object creation
                 engWordName = engWordInput,
                 turWordName = turWordInput,
                 category = categoryInput,
                 picture = picturePath
             )
 
-            wordRepo.addWord(newWord) { isSuccess, message ->
+            wordRepo.addWord(newWord) { isSuccess, message ->//wordRepo addWord function
                 if (isSuccess) {
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Hata: $message", Toast.LENGTH_SHORT).show()
                 }
             }
-            showSuccessDialog(etEngWord, etTurWord, etCategory)
+            showSuccessDialog(etEngWord, etTurWord, etCategory)//Success Dialog
         }
+        //endregion
     }
+    //endregion
 
-    private fun showSuccessDialog(etEngWord: EditText, etTurWord: EditText, etCategory: EditText) {
+    //region Success Dialog
+    private fun showSuccessDialog(etEngWord: EditText,
+                                  etTurWord: EditText,
+                                  etCategory: EditText) {
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Başarılı")
         builder.setMessage("Kelime kaydedildi.")
 
-        builder.setPositiveButton("Ana Sayfaya Dön") { _, _ ->
+        //region Main Menu Button
+        builder.setPositiveButton("Ana Sayfaya Dön") { _, _ ->//Back to home
             val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
         }
+        //endregion
 
-        builder.setNegativeButton("Yeni Kelime Ekle") { dialog, _ ->
+        //region New Word Button
+        builder.setNegativeButton("Yeni Kelime Ekle") { dialog, _ ->//Clear all fields
             dialog.dismiss()
             etEngWord.text.clear()
             etTurWord.text.clear()
             etCategory.text.clear()
-            findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.GONE
+            findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.GONE//ImagePicker Clearing
 
         }
-
-        builder.create().show()
-    }
+        //endregion
+        builder.create().show()//Dialog Show
+    }//endregion
 }
