@@ -9,6 +9,7 @@ import com.example.a6times.R
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.a6times.data.Users
 import com.example.a6times.data.UsersRepository
@@ -45,6 +46,7 @@ class RegisterActivity : AppCompatActivity() {
 
     fun registerUser(){
         val userNameInput = findViewById<EditText>(R.id.editTextText8)
+        val userEmail = findViewById<EditText>(R.id.email)
         val userPassword = findViewById<EditText>(R.id.editTextTextPassword2)
         val userPasswordAgain = findViewById<EditText>(R.id.editTextTextPassword3)
 
@@ -62,40 +64,25 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        val securePassword = userPassword.text.toString().toSHA256()
+        val securePassword = userPassword.text.toString()
 
         val newUser = Users(
             userName = userNameInput.text.toString(),
+            userEmail = userEmail.text.toString(),
             userPassword = securePassword
+
         )
 
         lifecycleScope.launch {
             val result = userRepo.saveUser(newUser)
-
-            result.onSuccess {
-                MaterialAlertDialogBuilder(this@RegisterActivity) // Activity ismini buraya yazın
-                    .setTitle("Başarılı")
-                    .setMessage("Kullanıcı kaydı başarıyla tamamlandı!")
-                    .setPositiveButton("Tamam") { dialog, _ ->
-                        // İstersen burada başka bir sayfaya yönlendirebilirsin
-                        dialog.dismiss()
-                        finish()
-                    }
-                    .setCancelable(false) // Kullanıcı dışarı tıklayıp kapatamasın, butona basmalı
-                    .show()
-            }.onFailure { error ->
-                MaterialAlertDialogBuilder(this@RegisterActivity)
-                    .setTitle("Bir Hata Oluştu")
-                    .setMessage("Hata: ${error.message}")
-                    .setPositiveButton("Anladım", null)
-                    .show()
+            if(result){
+                finish()
+            }else{
+                Toast.makeText(this@RegisterActivity, "Hata Olustu!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun String.toSHA256(): String{
-        val bytes = MessageDigest.getInstance("SHA-256").digest(this.toByteArray())
-        return bytes.joinToString(""){"%02x".format(it)}
-    }
+
 
 }
