@@ -6,12 +6,13 @@
     android:background="#101010"
     android:padding="24dp">
 
+    <!-- 1. ÜST KISIM: İlerleme Çubuğu ve Soru Sayısı -->
     <ProgressBar
         android:id="@+id/examProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:progress="25"
         android:progressTint="#BB86FC"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,17 +23,18 @@
         android:id="@+id/tvQuestionCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="Soru: 5 / 20"
         android:textColor="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/examProgressBar" />
 
+    <!-- 2. ORTA KISIM: Soru Kartı -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/questionCard"
         android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="40dp"
+        android:layout_height="180dp"
+        android:layout_marginTop="16dp"
         app:cardBackgroundColor="#1E1E1E"
         app:cardCornerRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,26 +48,29 @@
             android:gravity="center"
             android:text="Adventure"
             android:textColor="#FFFFFF"
-            android:textSize="32sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- 3. ŞIKLAR: Esnek Alan (Ekran daralırsa burası küçülür/kayar) -->
     <LinearLayout
         android:id="@+id/optionsContainer"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:orientation="vertical"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@+id/questionCard"
+        app:layout_constraintBottom_toTopOf="@+id/btnNextQuestion"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/questionCard">
 
         <Button
             android:id="@+id/btnOption1"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="8dp"
             android:text="Macera"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
@@ -75,8 +80,8 @@
             android:id="@+id/btnOption2"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="8dp"
             android:text="Deneyim"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
@@ -86,27 +91,26 @@
             android:id="@+id/btnOption3"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="8dp"
             android:text="Yolculuk"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             app:strokeColor="#333333" />
     </LinearLayout>
 
+    <!-- 4. ALT KISIM: Butonlar (Burayı en alta sabitledik) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNextQuestion"
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
+        android:layout_height="56dp"
         android:text="Sonraki"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        app:backgroundTint="#ff6750a4"
+        app:backgroundTint="#6750A4"
         app:cornerRadius="15dp"
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="textEnd"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -118,8 +122,8 @@
         android:text="Sınavı Bitir"
         android:textAllCaps="false"
         android:textColor="#808080"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="22dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/btnNextQuestion"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnNextQuestion" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

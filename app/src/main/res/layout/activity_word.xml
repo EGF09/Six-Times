@@ -39,6 +39,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        tools:listitem="@android:layout/simple_list_item_2" />
+        tools:listitem="@layout/item_word" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

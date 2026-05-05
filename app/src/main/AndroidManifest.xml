@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,6 +19,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".WordleActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".menunav.AnalysisActivity"
             android:exported="false" />
 
@@ -26,9 +32,11 @@
             android:name=".loginnav.RegisterActivity"
             android:exported="false" />
 
+        <!-- HomeActivity için ekran kaydırma desteği güçlendirildi -->
         <activity
             android:name=".menunav.HomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".menunav.AddWordActivity"
@@ -43,6 +51,12 @@
             android:exported="false" />
 
         <activity android:name=".WordActivity" android:exported="false" />
+
+        <activity
+            android:name=".menunav.StoryDetailActivity"
+            android:exported="false" />
+
+        <activity android:name=".menunav.StoryDetailActivity" android:exported="false" />
 
         <activity
             android:name=".MainActivity"
