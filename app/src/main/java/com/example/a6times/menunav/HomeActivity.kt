@@ -4,12 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.example.a6times.ExamActivity
 import com.example.a6times.R
 import com.example.a6times.WordActivity
+import com.example.a6times.WordleActivity
 import com.google.android.material.button.MaterialButton
 
 class HomeActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -19,37 +22,36 @@ class HomeActivity : AppCompatActivity() {
         val btnAddWord = findViewById<MaterialButton>(R.id.btnAddWord)
         val btnAnalysis = findViewById<MaterialButton>(R.id.btnAnalysis)
         val btnMyWords = findViewById<MaterialButton>(R.id.btnMyWords)
+        val btnWordle = findViewById<MaterialButton>(R.id.btnWordle)
+        val cardAiStory = findViewById<CardView>(R.id.cardAiStory)
 
-        //region Settings Button Function
         ivSettings.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
-        //endregion
 
-        //region Quiz Button Function
         btnStartQuiz.setOnClickListener {
             startActivity(Intent(this, ExamActivity::class.java))
         }
-        //endregion
 
-        //region Add Word Button Function
         btnAddWord.setOnClickListener {
             startActivity(Intent(this, AddWordActivity::class.java))
         }
-        //endregion
 
-        //region Analysis Button Function
         btnAnalysis.setOnClickListener {
             startActivity(Intent(this, AnalysisActivity::class.java))
         }
-        //endregion
 
-        //region My Words Button Function
         btnMyWords.setOnClickListener {
-            val intent = Intent(this, WordActivity::class.java)
+            startActivity(Intent(this, WordActivity::class.java))
+        }
+
+        btnWordle.setOnClickListener {
+            startActivity(Intent(this, WordleActivity::class.java))
+        }
+
+        cardAiStory.setOnClickListener {
+            val intent = Intent(this, StoryDetailActivity::class.java)
             startActivity(intent)
         }
-        //endregion
     }
 }
