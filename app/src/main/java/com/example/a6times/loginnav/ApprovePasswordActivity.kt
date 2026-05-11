@@ -20,16 +20,19 @@ class ApprovePasswordActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         val ConfirmPasswordButton = findViewById<Button>(R.id.ConfirmPasswordButton)
+        val ApprovePasswordBackButton = findViewById<ImageButton>(R.id.ApprovePasswordBackButton)
+
+        //region şifre onayla butonu
         ConfirmPasswordButton.setOnClickListener {
 
-            finish()
+            finish() // Ana sayfaya dön
         }
-
-        val ApprovePasswordBackButton = findViewById<ImageButton>(R.id.ApprovePasswordBackButton)
+        //endregion
+        //region geri butonu
         ApprovePasswordBackButton.setOnClickListener {
-            finish()
+            finish()// Ana sayfaya dön
         }
+        //endregion
     }
 }

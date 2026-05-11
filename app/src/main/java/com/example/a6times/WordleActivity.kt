@@ -19,12 +19,14 @@ class WordleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityWordleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         cells = Array(maxTries) { arrayOfNulls<TextView>(targetWord.length) }
-        setupGrid()
+        setupGrid() // Grid'i oluştur
 
+        //region Guess Button
         binding.btnSubmitGuess.setOnClickListener {
             val guess = binding.etGuess.text.toString().uppercase()
 
@@ -35,16 +37,19 @@ class WordleActivity : AppCompatActivity() {
                 Toast.makeText(this, "Lütfen bir kelime girin", Toast.LENGTH_SHORT).show()
             }
         }
+        //endregion
 
+        //region Back Button
         binding.WordBackButton.setOnClickListener {
             finish()
         }
+        //endregion
     }
 
+    //region Grid Oluşturma
     private fun setupGrid() {
         binding.glWordleGrid.removeAllViews()
         binding.glWordleGrid.columnCount = targetWord.length
-
         binding.glWordleGrid.post {
             val marginSize = 8
             val totalWidth = binding.glWordleGrid.width
@@ -54,7 +59,7 @@ class WordleActivity : AppCompatActivity() {
 
             // Sütun başına düşen boşlukları hesaplayıp hücre boyutunu buluyoruz
             val cellSize = (widthToUse / targetWord.length) - (marginSize * 2)
-
+            //region Hücre Oluşturma
             for (row in 0 until maxTries) {
                 for (col in 0 until targetWord.length) {
                     val textView = TextView(this)
@@ -79,11 +84,14 @@ class WordleActivity : AppCompatActivity() {
                     cells[row][col] = textView
                 }
             }
+            //endregion
         }
     }
+    //endregion
+    //region tahmin kontrol fonksiyonu
     private fun checkGuess(guess: String) {
         if (currentTry >= maxTries) return
-
+        //region kelime tahmin kontrolü
         for (i in 0 until targetWord.length) {
             val textView = cells[currentTry][i]
 
@@ -99,6 +107,7 @@ class WordleActivity : AppCompatActivity() {
                 textView?.background?.setTint(Color.parseColor(colorHex))
             }
         }
+        //endregion
 
         if (guess == targetWord) {
             Toast.makeText(this, "Tebrikler!", Toast.LENGTH_LONG).show()
@@ -110,4 +119,5 @@ class WordleActivity : AppCompatActivity() {
 
         currentTry++
     }
+    //endregion
 }

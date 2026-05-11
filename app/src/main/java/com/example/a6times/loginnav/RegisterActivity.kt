@@ -32,27 +32,31 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         val confirmRegisterButton = findViewById<Button>(R.id.ConfirmRegisterButton)
-        confirmRegisterButton.setOnClickListener {
-            //User Register
-            registerUser()
-        }
-        
         val RegisterBackButton = findViewById<ImageButton>(R.id.RegisterBackButton)
-        RegisterBackButton.setOnClickListener {
-            finish()
+        //region kayıt ol butonu
+        confirmRegisterButton.setOnClickListener {
+            registerUser()// Kayıt ol fonksiyonu çağrılır
         }
+        //endregion
+        
+        //region geri butonu
+        RegisterBackButton.setOnClickListener {
+            finish()// Ana sayfaya dön
+        }
+        //endregion
     }
 
 
+    //region kayıt ol fonksiyonu
     fun registerUser(){
         val userNameInput = findViewById<EditText>(R.id.editTextText8)
         val userEmail = findViewById<EditText>(R.id.email)
         val userPassword = findViewById<EditText>(R.id.editTextTextPassword2)
         val userPasswordAgain = findViewById<EditText>(R.id.editTextTextPassword3)
 
-        //password check
+        //region boş alan kontrolü
         if (userPassword.text.toString() != userPasswordAgain.text.toString()){
-            MaterialAlertDialogBuilder(this@RegisterActivity) // Activity ismini buraya yazın
+            MaterialAlertDialogBuilder(this@RegisterActivity) // Hata mesajı
                 .setTitle("Hata")
                 .setMessage("Parola dogrulanmadi!")
                 .setPositiveButton("Tamam") { dialog, _ ->
@@ -63,16 +67,20 @@ class RegisterActivity : AppCompatActivity() {
                 .show()
             return
         }
+        //endregion
 
+        //region parola şifreleme
         val securePassword = userPassword.text.toString()
-
+        //endregion
+        //region kullanıcı nesnesi
         val newUser = Users(
             userName = userNameInput.text.toString(),
             userEmail = userEmail.text.toString(),
             userPassword = securePassword
 
         )
-
+        //endregion
+        //region kullanıcı kaydı
         lifecycleScope.launch {
             val result = userRepo.saveUser(newUser)
             if(result){
@@ -81,8 +89,7 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this@RegisterActivity, "Hata Olustu!", Toast.LENGTH_SHORT).show()
             }
         }
+        //endregion
     }
-
-
-
+    //endregion
 }

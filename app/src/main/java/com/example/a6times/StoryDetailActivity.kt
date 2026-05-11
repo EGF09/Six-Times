@@ -23,6 +23,7 @@ class StoryDetailActivity : AppCompatActivity() {
         }
 
         tvStoryTitle.text = "Haftalık Kelime Hikayen"
+
         tvFullStoryText.text = "Öğrendiğin kelimelerle oluşturulan eşsiz hikayen burada görüntülenecek. " +
                 "Yapay zeka, hafızanı güçlendirmek için bu kelimeleri anlamlı bir kurgu içinde birleştiriyor."
     }
