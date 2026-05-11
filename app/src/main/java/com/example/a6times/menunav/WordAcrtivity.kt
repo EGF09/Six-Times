@@ -2,9 +2,11 @@ package com.example.a6times
 
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.a6times.data.WordsRepository
 
 data class WordItem(
     val wordText: String,
@@ -12,6 +14,11 @@ data class WordItem(
 )
 
 class WordActivity : AppCompatActivity() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var wordAdapter: WordAdapter
+    private val wordList = mutableListOf<WordItem>()
+    private val wordsRepository = WordsRepository()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_word)
@@ -21,16 +28,27 @@ class WordActivity : AppCompatActivity() {
             finish()
         }
 
-        val wordList = listOf(
-            WordItem("APPLE", 85),
-            WordItem("TEACHER", 60),
-            WordItem("PHONE", 100),
-            WordItem("HUNGRY", 30),
-            WordItem("DELİCİOUS", 50)
-        )
-
-        val recyclerView = findViewById<RecyclerView>(R.id.rvWords)
+        recyclerView = findViewById(R.id.rvWords)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = WordAdapter(wordList)
+        wordAdapter = WordAdapter(wordList)
+        recyclerView.adapter = wordAdapter
+
+        fetchWordsDynamically()
+    }
+
+    private fun fetchWordsDynamically() {
+        wordsRepository.listenToWords(
+            onDataChange = { words ->
+                wordList.clear()
+                for (word in words) {
+                    val displayText = "${word.engWordName} - ${word.turWordName}"
+                    wordList.add(WordItem(displayText, word.progress))
+                }
+                wordAdapter.notifyDataSetChanged()
+            },
+            onError = { errorMessage ->
+                Toast.makeText(this, "Hata: $errorMessage", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }

@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
+import com.google.firebase.database.ValueEventListener
 
 class WordsRepository {
     private val auth = FirebaseAuth.getInstance()
@@ -65,6 +66,33 @@ class WordsRepository {
                 } else {
                     onComplete(false, databaseError?.message ?: "Sayaç işlemi başarısız oldu.")
                 }
+            }
+        })
+    }
+
+    fun listenToWords(onDataChange: (List<Words>) -> Unit, onError: (String) -> Unit) {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            onError("Kullanıcı girişi yapılmamış.")
+            return
+        }
+
+        val userWordsRef = databaseRef.child("Words").child(userId)
+
+        userWordsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val wordsList = mutableListOf<Words>()
+                for (wordSnapshot in snapshot.children) {
+                    val word = wordSnapshot.getValue(Words::class.java)
+                    if (word != null) {
+                        wordsList.add(word)
+                    }
+                }
+                onDataChange(wordsList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onError(error.message)
             }
         })
     }
