@@ -24,40 +24,45 @@ class LoginActivity: AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-
+        //region Giriş Yap Butonu
         val loginBtn = findViewById<Button>(R.id.GirisYapButton)
         loginBtn.setOnClickListener {
-            login()
+            login()// Giriş yap fonksiyonu
         }
+        //endregion
 
-
+        //region Kayıt Ol Butonu
         findViewById<Button>(R.id.KayitOlButton)?.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+        // Kayıt ol sayfasına geçiş
         }
-
+        //endregion
+        //region Şifremi Unuttum Butonu
         findViewById<Button>(R.id.SifremiUnuttumButton)?.setOnClickListener {
             startActivity(Intent(this, ForgotActivity::class.java))
+        // Şifremi unuttum sayfasına geçiş
         }
+        //endregion
     }
 
+    //region giriş yap fonksiyonu
     fun login(){
         val email = findViewById<EditText>(R.id.emailLogin).text.toString()
         val pass = findViewById<EditText>(R.id.passLogin).text.toString()
-
+        //region boş alan kontrolü
         auth.signInWithEmailAndPassword(email, pass)
             .addOnCompleteListener { task ->
-                if(task.isSuccessful){
+                if(task.isSuccessful){// Giriş başarılıysa
 
-                    startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                    startActivity(Intent(this@LoginActivity,
+                        HomeActivity::class.java))
 
                 }else{
-                    Toast.makeText(this@LoginActivity, "Hata Olustu!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Hata Olustu!",
+                        Toast.LENGTH_SHORT).show()// Giriş başarısızsa hata mesajı
                 }
             }
+        //endregion
+        }
+    //endregion
     }
-
-
-
-
-
-}

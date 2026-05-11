@@ -22,15 +22,21 @@ class ForgotActivity : AppCompatActivity() {
         }
 
         val approvePasswordButton = findViewById<Button>(R.id.ChangePasswordButton)
-        approvePasswordButton.setOnClickListener {
-            val approveIntent = Intent(this, com.example.a6times.loginnav.ApprovePasswordActivity::class.java)
-            startActivity(approveIntent)
-            finish()
-        }
-
         val ForgotBackButton = findViewById<ImageButton>(R.id.ForgotBackButton)
-        ForgotBackButton.setOnClickListener {
-            finish()
+
+        //region şifre onayla butonu
+        approvePasswordButton.setOnClickListener {
+            val approveIntent = Intent(this, com.example.a6times.loginnav
+                .ApprovePasswordActivity::class.java)
+            startActivity(approveIntent)
+            finish()// Ana sayfaya dön
         }
+        //endregion
+
+        //region geri butonu
+        ForgotBackButton.setOnClickListener {
+            finish()// Ana sayfaya dön
+        }
+        //endregion
     }
 }

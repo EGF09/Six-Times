@@ -11,7 +11,7 @@ class UsersRepository : IUsersRepository{
     private val auth = FirebaseAuth.getInstance()
     val database = FirebaseDatabase.getInstance().getReference("Users")
 
-
+    //region kullanıcı kaydı işlemi
     override suspend fun saveUser(user: Users): Boolean{
 
         return try {
@@ -20,17 +20,18 @@ class UsersRepository : IUsersRepository{
             val authId = auth.currentUser?.uid
             user.userPassword = user.userPassword.toSHA256()
             database.child(authId.toString()).setValue(user)
-
             task.user != null
-
         }catch (e: Exception){
             false
         }
 
     }
+    //endregion
 
+    //region SHA256 fonksiyonu
     fun String.toSHA256(): String {
         val bytes = java.security.MessageDigest.getInstance("SHA-256").digest(this.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }
+        return bytes.joinToString("") { "%02x".format(it) }// Hexadecimal format
     }
+    //endregion
 }
