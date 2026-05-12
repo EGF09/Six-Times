@@ -14,6 +14,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme._6Times">
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".loginnav.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".menunav.HomeActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".menunav.SettingsActivity"
             android:exported="false" />
@@ -26,17 +50,13 @@
             android:name=".menunav.AnalysisActivity"
             android:exported="false" />
 
-        <activity android:name=".ExamActivity" android:exported="false" />
+        <activity
+            android:name=".ExamActivity"
+            android:exported="false" />
 
         <activity
             android:name=".loginnav.RegisterActivity"
             android:exported="false" />
-
-        <!-- HomeActivity için ekran kaydırma desteği güçlendirildi -->
-        <activity
-            android:name=".menunav.HomeActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".menunav.AddWordActivity"
@@ -50,21 +70,13 @@
             android:name=".loginnav.ApprovePasswordActivity"
             android:exported="false" />
 
-        <activity android:name=".WordActivity" android:exported="false" />
+        <activity
+            android:name=".WordActivity"
+            android:exported="false" />
 
         <activity
             android:name=".menunav.StoryDetailActivity"
             android:exported="false" />
-
-        <activity
-            android:name=".loginnav.LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
 
     </application>
 </manifest>
