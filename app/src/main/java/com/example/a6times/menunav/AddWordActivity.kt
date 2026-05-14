@@ -33,7 +33,6 @@ class AddWordActivity : AppCompatActivity() {
     }
     //endregion
 
-
     //region Activity Functions
     override fun onCreate(savedInstanceState: Bundle?) {
 
