@@ -73,7 +73,7 @@ class WordsRepository {
 
                     // 4. Kelimeyi kendi numarasıyla (0, 1, 2..) Words -> userId altına kaydediyoruz
                     userWordsRef.child(newWordId.toString()).setValue(word)
-                        .addOnSuccessListener {
+                        .addOnSuccessListener {// Eğer örnek cümleler varsa
                             if (samplesMap.isNotEmpty()) {
                                 // 5. Örnek cümleleri doğrudan kelimenin altına (Words -> userId -> wordID -> samples) kaydediyoruz
                                 userWordsRef.child(newWordId.toString()).child("samples").setValue(samplesMap)

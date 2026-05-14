@@ -69,8 +69,7 @@ class AddWordActivity : AppCompatActivity() {
             val samplesInput = etSamples.text.toString().trim()
             val picturePath = selectedImageUri?.toString() ?: ""
 
-            if (engWordInput.isEmpty()|| turWordInput.isEmpty()|| categoryInput.isEmpty()
-                ||picturePath.isEmpty()) {//Blank check
+            if (engWordInput.isEmpty()|| turWordInput.isEmpty()|| categoryInput.isEmpty()|| samplesInput.isEmpty()) {//Blank check
                 Toast.makeText(this, "Lütfen tüm alanları doldurun.",
                     Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
