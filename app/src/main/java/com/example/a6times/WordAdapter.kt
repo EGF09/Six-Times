@@ -31,9 +31,10 @@ class WordAdapter(private val wordList: List<WordItem>) : RecyclerView.Adapter<W
         holder.tvWordText.text = currentWord.wordText
 
         // Artık burası kırmızı yanmayacak:
-        holder.tvWordPercent.text = "%${currentWord.progress}"
+        val res = currentWord.progress * 16.7
+        holder.tvWordPercent.text = "%" + "%.0f".format(res)
 
-        holder.pbWordProgress.progress = currentWord.progress
+        holder.pbWordProgress.progress = currentWord.progress * 17
     }
     //endregion
     //region item sayısını getir

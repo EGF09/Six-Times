@@ -65,7 +65,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/questionCard">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOption1"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
@@ -76,7 +76,7 @@
             android:textColor="#FFFFFF"
             app:strokeColor="#BB86FC" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOption2"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
@@ -87,7 +87,7 @@
             android:textColor="#FFFFFF"
             app:strokeColor="#333333" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOption3"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"

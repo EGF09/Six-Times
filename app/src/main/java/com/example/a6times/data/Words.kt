@@ -7,7 +7,10 @@ data class Words(
     val turWordName: String = "",
     val category: String = "",
     val picture: String = "",
-    val isActive: Boolean = true,
-    var progress: Int = 0
+    var isActive: Boolean = true,
+    var progress: Int = 0,
+    var lastReviewedAt: Long = 0L,
+    var nextReviewAt: Long = 0L,
+    var isLearned: Boolean = false
 )
 //endregion

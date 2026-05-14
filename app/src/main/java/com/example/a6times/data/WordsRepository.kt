@@ -136,4 +136,84 @@ class WordsRepository {
             currentId + 1 // Doluysa 1 artır
         }
     }
+
+    //region Spaced Repetition (Aralıklı Tekrar) Logic
+
+    /**
+     * Tüm kelimeleri alıp sadece sınava girebilecek olanları (aktif olanları ve zamanı gelenleri) döndürür.
+     */
+    fun getExamReadyWords(allWords: List<Words>): List<Words> {
+        val currentTime = System.currentTimeMillis()
+        val readyWords = mutableListOf<Words>()
+
+        for (word in allWords) {
+            if (word.isLearned) continue // Tamamen öğrenildiyse sınava dahil etme
+
+            if (word.isActive) {
+                readyWords.add(word)
+            } else {
+                // Kelime pasifse fakat aktif olma zamanı geldiyse, aktif yapıp listeye ekle
+                if (word.nextReviewAt in 1..currentTime) {
+                    word.isActive = true
+                    updateWordStatus(word.wordID, isActive = true)
+                    readyWords.add(word)
+                }
+            }
+        }
+        return readyWords
+    }
+
+    private fun updateWordStatus(wordId: Int, isActive: Boolean) {
+        val userId = auth.currentUser?.uid ?: return
+        databaseRef.child("Words").child(userId).child(wordId.toString()).child("active").setValue(isActive)
+    }
+
+    /**
+     * Sınav sonrası kelimenin progress durumunu ve zamanlarını günceller.
+     */
+    fun updateWordProgress(word: Words, isCorrect: Boolean, onComplete: ((Boolean) -> Unit)? = null) {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            onComplete?.invoke(false)
+            return
+        }
+
+        val currentTime = System.currentTimeMillis()
+        word.lastReviewedAt = currentTime
+
+        if (isCorrect) {
+            word.progress += 1
+            word.isActive = false
+
+            val oneDayMs = 86400000L
+            when (word.progress) {
+                1 -> word.nextReviewAt = currentTime + oneDayMs // 1 gün
+                2 -> word.nextReviewAt = currentTime + 7L * oneDayMs // 1 hafta
+                3 -> word.nextReviewAt = currentTime + 30L * oneDayMs // 1 ay (yaklaşık)
+                4 -> word.nextReviewAt = currentTime + 90L * oneDayMs // 3 ay (yaklaşık)
+                5 -> word.nextReviewAt = currentTime + 180L * oneDayMs // 6 ay (yaklaşık)
+                6 -> {
+                    word.nextReviewAt = currentTime + 365L * oneDayMs // 1 yıl
+                    word.isLearned = true // Tamamen öğrenildi
+                }
+                else -> {
+                    if (word.progress > 6) {
+                        word.progress = 6
+                        word.isLearned = true
+                    }
+                }
+            }
+        } else {
+            word.progress -= 1
+            if (word.progress < 0) word.progress = 0
+            word.isActive = true // Yanlışsa tekrar aktif kalsın ve bir sonraki sınava girsin
+        }
+
+        // Firebase'i güncelle
+        val wordRef = databaseRef.child("Words").child(userId).child(word.wordID.toString())
+        wordRef.setValue(word)
+            .addOnSuccessListener { onComplete?.invoke(true) }
+            .addOnFailureListener { onComplete?.invoke(false) }
+    }
+    //endregion
 }
