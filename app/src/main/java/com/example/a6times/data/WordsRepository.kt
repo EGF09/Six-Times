@@ -17,7 +17,7 @@ class WordsRepository {
     //endregion
 
     //region kelime ekleme fonksiyonu
-    fun addWord(word: Words, onComplete: (Boolean, String?) -> Unit) {
+    fun addWord(word: Words, samples: List<String>, onComplete: (Boolean, String?) -> Unit) {
         val userId = auth.currentUser?.uid
         if (userId == null) {
             onComplete(false, "Kullanıcı girişi yapılmamış.")
@@ -25,7 +25,7 @@ class WordsRepository {
         }
 
         // Sayacın tutulacağı referans (Kullanıcıya özel)
-        val counterRef = databaseRef.child("Counters").child(userId).child("lastWordID")
+        val counterRef = databaseRef.child("Counters").child(userId)
         
         // Kelimelerin kaydedileceği referans (Kullanıcıya özel)
         val userWordsRef = databaseRef.child("Words").child(userId)
@@ -34,15 +34,19 @@ class WordsRepository {
         counterRef.runTransaction(object : Transaction.Handler {
             //region Transaction işlemleri
             override fun doTransaction(mutableData: MutableData): Transaction.Result {
-                val currentId = mutableData.getValue(Int::class.java)
+                val currentWordId = mutableData.child("lastWordID").getValue(Int::class.java)
+                val currentSampleId = mutableData.child("lastSampleID").getValue(Int::class.java)
 
-                val nextId = if (currentId == null) {
-                    0 // Veritabanı boşsa 0'dan başla
-                } else {
-                    currentId + 1 // Doluysa 1 artır
+                val nextWordId = idCounter(currentWordId)
+
+                mutableData.child("lastWordID").value = nextWordId
+
+                if (samples.isNotEmpty()) {
+                    val startSampleId = idCounter(currentSampleId)
+                    val endSampleId = startSampleId + samples.size - 1
+                    mutableData.child("lastSampleID").value = endSampleId
                 }
 
-                mutableData.value = nextId
                 return Transaction.success(mutableData)
             }
             //endregion
@@ -54,22 +58,43 @@ class WordsRepository {
             ) {
                 if (committed && currentData != null) {
                     // 2. Transaction başarılı oldu, yeni ID'mizi aldık
-                    val newId = currentData.getValue(Int::class.java) ?: 0
+                    val newWordId = currentData.child("lastWordID").getValue(Int::class.java) ?: 0
+                    val endSampleId = currentData.child("lastSampleID").getValue(Int::class.java) ?: 0
+                    val startSampleId = if (samples.isEmpty()) 0 else endSampleId - samples.size + 1
 
                     // 3. Objenin içindeki wordID'yi bu yeni ID ile güncelliyoruz
-                    word.wordID = newId
+                    word.wordID = newWordId
+                    
+                    val samplesMap = mutableMapOf<String, WordSample>()
+                    for ((index, sampleText) in samples.withIndex()) {
+                        val sid = startSampleId + index
+                        samplesMap[sid.toString()] = WordSample(sampleID = sid, sample = sampleText)
+                    }
 
                     // 4. Kelimeyi kendi numarasıyla (0, 1, 2..) Words -> userId altına kaydediyoruz
-                    userWordsRef.child(newId.toString()).setValue(word)
+                    userWordsRef.child(newWordId.toString()).setValue(word)
                         .addOnSuccessListener {
-                            onComplete(true, "Kelime eklendi. Yeni ID: $newId")
+                            if (samplesMap.isNotEmpty()) {
+                                // 5. Örnek cümleleri doğrudan kelimenin altına (Words -> userId -> wordID -> samples) kaydediyoruz
+                                userWordsRef.child(newWordId.toString()).child("samples").setValue(samplesMap)
+                                    .addOnSuccessListener {
+                                        onComplete(true, "Kelime ve örnek cümleler eklendi. Yeni ID: $newWordId")
+                                    }
+                                    .addOnFailureListener { error ->
+                                        onComplete(false, "Örnek cümleler eklenemedi: ${error.message}")
+                                    }
+                            } else {
+                                onComplete(true, "Kelime eklendi (örnek cümle yok). Yeni ID: $newWordId")
+                            }
                         }
                         .addOnFailureListener { error ->
                             onComplete(false, error.message)
                         }
-                } else {
+                }
+                else {
                     onComplete(false, databaseError?.message ?: "Sayaç işlemi başarısız oldu.")
                 }
+
             }
             //endregion
         })
@@ -103,4 +128,12 @@ class WordsRepository {
         })
     }
     //endregion
+
+    fun idCounter(currentId : Int?): Int {
+        return if (currentId == null) {
+            0 // Veritabanı boşsa 0'dan başla
+        } else {
+            currentId + 1 // Doluysa 1 artır
+        }
+    }
 }

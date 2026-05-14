@@ -43,6 +43,7 @@ class AddWordActivity : AppCompatActivity() {
         val etEngWord = findViewById<EditText>(R.id.etEngWord)
         val etTurWord = findViewById<EditText>(R.id.etTurWord)
         val etCategory = findViewById<EditText>(R.id.etCategory)
+        val etSamples = findViewById<EditText>(R.id.etSamples)
 
         val btnBack = findViewById<ImageButton>(R.id.btnBack)
         val btnSelectImage = findViewById<Button>(R.id.btnSelectImage)
@@ -66,10 +67,13 @@ class AddWordActivity : AppCompatActivity() {
             val engWordInput = etEngWord.text.toString().trim()
             val turWordInput = etTurWord.text.toString().trim()
             val categoryInput = etCategory.text.toString().trim()
+            val samplesInput = etSamples.text.toString().trim()
             val picturePath = selectedImageUri?.toString() ?: ""
 
-            if (engWordInput.isEmpty()|| turWordInput.isEmpty()) {//Blank check
-                Toast.makeText(this, "Lütfen tüm alanları doldurun.", Toast.LENGTH_SHORT).show()
+            if (engWordInput.isEmpty()|| turWordInput.isEmpty()|| categoryInput.isEmpty()
+                ||picturePath.isEmpty()) {//Blank check
+                Toast.makeText(this, "Lütfen tüm alanları doldurun.",
+                    Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -80,14 +84,19 @@ class AddWordActivity : AppCompatActivity() {
                 picture = picturePath
             )
 
-            wordRepo.addWord(newWord) { isSuccess, message ->//wordRepo addWord function
+            // Cümleleri alt satırlara göre böl ve boş olanları çıkar
+            val samplesList = samplesInput.split('\n')
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+
+            wordRepo.addWord(newWord, samplesList) { isSuccess, message ->//wordRepo addWord function
                 if (isSuccess) {
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Hata: $message", Toast.LENGTH_SHORT).show()
                 }
             }
-            showSuccessDialog(etEngWord, etTurWord, etCategory)//Success Dialog
+            showSuccessDialog(etEngWord, etTurWord, etCategory, etSamples)//Success Dialog
         }
         //endregion
     }
@@ -96,14 +105,15 @@ class AddWordActivity : AppCompatActivity() {
     //region Success Dialog
     private fun showSuccessDialog(etEngWord: EditText,
                                   etTurWord: EditText,
-                                  etCategory: EditText) {
+                                  etCategory: EditText,
+                                  etSamples: EditText ) {
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Başarılı")
         builder.setMessage("Kelime kaydedildi.")
 
         //region Main Menu Button
-        builder.setPositiveButton("Ana Sayfaya Dön") { _, _ ->//Back to home
+        builder.setPositiveButton("Ana Sayfaya Dön") { _, _ -> //Back to home
             val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
@@ -117,6 +127,7 @@ class AddWordActivity : AppCompatActivity() {
             etEngWord.text.clear()
             etTurWord.text.clear()
             etCategory.text.clear()
+            etSamples.text.clear()
             findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.GONE//ImagePicker Clearing
 
         }
