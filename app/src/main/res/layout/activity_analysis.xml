@@ -80,12 +80,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"
-        android:text="En Çok Zorlanılan Kelimeler"
+        android:text="Kategori Bazlı İlerleme"
         android:textColor="#BBBBBB"
         android:textSize="16sp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHardWords"
+        android:id="@+id/rvTopicProgress"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

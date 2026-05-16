@@ -14,12 +14,17 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a6times.R
+import com.example.a6times.TopicProgressAdapter
 import com.example.a6times.WordAdapter
 import com.example.a6times.WordItem
 import java.io.File
 import java.io.FileOutputStream
 
 class AnalysisActivity : AppCompatActivity() {
+
+    private var currentTotalWords: Int = 0
+    private var currentOverallAccuracy: Int = 0
+    private var currentProgressList: List<com.example.a6times.data.TopicProgress> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,21 +45,69 @@ class AnalysisActivity : AppCompatActivity() {
 
         val tvTotalWords = findViewById<TextView>(R.id.tvTotalWordsCount)
         val tvAccuracy = findViewById<TextView>(R.id.tvAccuracyRate)
-        val rvHardWords = findViewById<RecyclerView>(R.id.rvHardWords)
+        val rvTopicProgress = findViewById<RecyclerView>(R.id.rvTopicProgress)
+        rvTopicProgress.layoutManager = LinearLayoutManager(this)
 
-        updateStatistics(tvTotalWords, tvAccuracy)
-        setupHardWordsList(rvHardWords)
+        val wordsRepository = com.example.a6times.data.WordsRepository()
+        wordsRepository.listenToWords(
+            onDataChange = { wordsList ->
+                updateStatisticsAndProgress(wordsList, tvTotalWords, tvAccuracy, rvTopicProgress)
+            },
+            onError = { error ->
+                Toast.makeText(this, "Veriler alınamadı: $error", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
-    private fun updateStatistics(tvTotal: TextView, tvRate: TextView) {
-        tvTotal.text = "Toplam Kelime\n45"
-        tvRate.text = "Başarı Oranı\n%72"
+    private fun updateStatisticsAndProgress(
+        words: List<com.example.a6times.data.Words>,
+        tvTotal: TextView,
+        tvRate: TextView,
+        rvTopicProgress: RecyclerView
+    ) {
+        currentTotalWords = words.size
+        // İlerleme kaydedilmiş (progress > 0) kelimeleri doğru bilinmiş olarak varsayıyoruz
+        val correctWords = words.count { it.progress > 0 }
+        
+        currentOverallAccuracy = if (currentTotalWords > 0) {
+            ((correctWords.toDouble() / currentTotalWords.toDouble()) * 100).toInt()
+        } else {
+            0
+        }
+
+        tvTotal.text = "Toplam Kelime\n$currentTotalWords"
+        tvRate.text = "Başarı Oranı\n%$currentOverallAccuracy"
+
+        currentProgressList = calculateTopicProgress(words)
+        rvTopicProgress.adapter = TopicProgressAdapter(currentProgressList)
     }
 
-    private fun setupHardWordsList(recyclerView: RecyclerView) {
-        val hardWords = listOf(WordItem("Ambiguous", 15), WordItem("Persistence", 30))
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = WordAdapter(hardWords)
+    private fun calculateTopicProgress(words: List<com.example.a6times.data.Words>): List<com.example.a6times.data.TopicProgress> {
+        val groupedByCategory = words.groupBy { it.category }
+        val progressList = mutableListOf<com.example.a6times.data.TopicProgress>()
+        
+        for ((category, categoryWords) in groupedByCategory) {
+            val totalCount = categoryWords.size
+            val correctCount = categoryWords.count { it.progress > 0 }
+            
+            val percentage = if (totalCount > 0) {
+                ((correctCount.toDouble() / totalCount.toDouble()) * 100).toInt()
+            } else {
+                0
+            }
+            
+            val topicName = if (category.isNotEmpty()) category else "Diğer"
+            progressList.add(
+                com.example.a6times.data.TopicProgress(
+                    topic = topicName,
+                    correctCount = correctCount,
+                    totalCount = totalCount,
+                    progressPercentage = percentage
+                )
+            )
+        }
+        
+        return progressList.sortedByDescending { it.progressPercentage }
     }
 
     private fun raporuPdfOlarakKaydet() {
@@ -70,9 +123,28 @@ class AnalysisActivity : AppCompatActivity() {
         canvas.drawText("6times Başarı Analiz Raporu", 50f, 80f, paint)
 
         paint.textSize = 14f
+        paint.isFakeBoldText = true
+        canvas.drawText("Genel İstatistikler", 50f, 130f, paint)
+
         paint.isFakeBoldText = false
-        canvas.drawText("Rapor Detayları:", 50f, 150f, paint)
-        canvas.drawText("Bu rapor otomatik olarak oluşturulmuştur.", 50f, 200f, paint)
+        canvas.drawText("Toplam Öğrenilen Kelime: $currentTotalWords", 50f, 160f, paint)
+        canvas.drawText("Genel Başarı Oranı: %$currentOverallAccuracy", 50f, 185f, paint)
+
+        paint.isFakeBoldText = true
+        canvas.drawText("Kategori Bazlı İlerleme", 50f, 235f, paint)
+
+        paint.isFakeBoldText = false
+        var currentY = 265f
+        for (progress in currentProgressList) {
+            val progressText = "${progress.topic}: ${progress.correctCount}/${progress.totalCount} (%${progress.progressPercentage})"
+            canvas.drawText(progressText, 50f, currentY, paint)
+            currentY += 25f
+        }
+
+        currentY += 30f
+        paint.textSize = 10f
+        paint.color = android.graphics.Color.GRAY
+        canvas.drawText("Bu rapor otomatik olarak oluşturulmuştur.", 50f, currentY, paint)
 
         pdfDocument.finishPage(page)
 
