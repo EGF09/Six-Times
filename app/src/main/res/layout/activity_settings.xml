@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="8dp"
-        android:text="Günlük Yeni Kelime Hedefi"
+        android:text="Sınav Soru Sınırı"
         android:textColor="#FFFFFF"
         android:textSize="18sp" />
 
@@ -43,7 +43,7 @@
         android:gravity="center_vertical">
 
         <EditText
-            android:id="@+id/etDailyWordCount"
+            android:id="@+id/etExamQuestionLimit"
             android:layout_width="80dp"
             android:layout_height="50dp"
             android:background="@drawable/rounded_button_background"
@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:text="kelime / gün"
+            android:text="soru"
             android:textColor="#888888"
             android:textSize="16sp" />
     </LinearLayout>

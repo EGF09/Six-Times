@@ -81,10 +81,22 @@ class ExamActivity : AppCompatActivity() {
                 if (allWords.isEmpty()) { 
                     allWords = words
                     val readyWords = wordsRepository.getExamReadyWords(words)
-                    if (readyWords.size >= 3) {
-                        startExam(readyWords)
+                    
+                    val sharedPref = getSharedPreferences("AppSettings", android.content.Context.MODE_PRIVATE)
+                    val questionLimit = sharedPref.getInt("ExamQuestionLimit", 10)
+
+                    // Şıkların (3 seçenek) dolabilmesi için tüm kelimelerin (allWords) en az 3 tane olması gerekir.
+                    if (allWords.size < 3) {
+                        Toast.makeText(this, "Sınav için sözlüğünüze toplam en az 3 kelime eklemelisiniz.", Toast.LENGTH_LONG).show()
+                        finish()
+                        return@listenToWords
+                    }
+
+                    // Sınava girmek için, vakti gelmiş kelimelerin ayarlardaki limit kadar olması gerekir.
+                    if (readyWords.size >= questionLimit) {
+                        startExam(readyWords, questionLimit)
                     } else {
-                        Toast.makeText(this, "Sınav için en az 3 kelime gerekli.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Sınav için en az $questionLimit kelimenin vakti gelmiş olmalı. (Şu an ${readyWords.size} kelime hazır)", Toast.LENGTH_LONG).show()
                         finish()
                     }
                 }
@@ -95,10 +107,8 @@ class ExamActivity : AppCompatActivity() {
         )
     }
 
-    private fun startExam(readyWords: List<Words>) {
-        // En fazla 20 soruluk sınav
-        val maxQuestions = if (readyWords.size >= 20) 20 else readyWords.size
-        examWords = readyWords.shuffled().take(maxQuestions)
+    private fun startExam(readyWords: List<Words>, limit: Int) {
+        examWords = readyWords.shuffled().take(limit)
         
         currentQuestionIndex = 0
         correctAnswersCount = 0
