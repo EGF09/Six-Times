@@ -1,41 +1,46 @@
 package com.example.a6times.menunav
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.a6times.R
+import com.example.a6times.WordActivity
 import com.example.a6times.data.Words
 import com.example.a6times.data.WordsRepository
-import androidx.activity.result.contract.ActivityResultContracts
-import android.net.Uri
-import android.widget.ImageView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class AddWordActivity : AppCompatActivity() {
     private val wordRepo = WordsRepository()
     private var selectedImageUri: Uri? = null
+    private var editWordId: String? = null
 
-    //region ImagePicker function
     private val pickImageLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()) { uri: Uri? ->
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
         if (uri != null) {
             selectedImageUri = uri
             Toast.makeText(this, "Resim seçildi!", Toast.LENGTH_SHORT).show()
-            findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.VISIBLE
-            findViewById<ImageView>(R.id.ivSelectedImage).setImageURI(selectedImageUri)
+            val ivSelectedImage = findViewById<ImageView>(R.id.ivSelectedImage)
+            ivSelectedImage.visibility = ImageView.VISIBLE
+            ivSelectedImage.setImageURI(selectedImageUri)
         } else {
             Toast.makeText(this, "Resim seçilmedi!", Toast.LENGTH_SHORT).show()
         }
     }
-    //endregion
 
-    //region Activity Functions
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_word)
 
@@ -43,93 +48,141 @@ class AddWordActivity : AppCompatActivity() {
         val etTurWord = findViewById<EditText>(R.id.etTurWord)
         val etCategory = findViewById<EditText>(R.id.etCategory)
         val etSamples = findViewById<EditText>(R.id.etSamples)
+        val ivSelectedImage = findViewById<ImageView>(R.id.ivSelectedImage)
 
         val btnBack = findViewById<ImageButton>(R.id.btnBack)
         val btnSelectImage = findViewById<Button>(R.id.btnSelectImage)
         val btnSave = findViewById<Button>(R.id.btnSaveWord)
 
-        //region Back Btn Functions
+        editWordId = intent.getStringExtra("EDIT_WORD_ID")
+
+        if (editWordId != null) {
+            btnSave.text = "Güncelle"
+            wordRepo.getWordDetails(editWordId!!) { word ->
+                if (word != null) {
+                    etEngWord.setText(word.engWordName)
+                    etTurWord.setText(word.turWordName)
+                    etCategory.setText(word.category)
+
+                    if (word.picture.isNotEmpty()) {
+                        selectedImageUri = Uri.parse(word.picture)
+                        ivSelectedImage.visibility = ImageView.VISIBLE
+                        ivSelectedImage.setImageURI(selectedImageUri)
+                    }
+
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (userId != null) {
+                        FirebaseDatabase.getInstance("https://six-times-228d1-default-rtdb.europe-west1.firebasedatabase.app")
+                            .reference.child("Words").child(userId).child(editWordId!!).child("samples")
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (snapshot.exists()) {
+                                        val samplesBuilder = StringBuilder()
+                                        for (sampleSnapshot in snapshot.children) {
+                                            val sampleText = sampleSnapshot.child("sample").getValue(String::class.java)
+                                            if (sampleText != null) {
+                                                samplesBuilder.append(sampleText).append("\n")
+                                            }
+                                        }
+                                        etSamples.setText(samplesBuilder.toString().trim())
+                                    }
+                                }
+                                override fun onCancelled(error: DatabaseError) {}
+                            })
+                    }
+                }
+            }
+        }
+
         btnBack.setOnClickListener {
             finish()
         }
-        //endregion
 
-        //region ImagePicker Button
         btnSelectImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
-        //endregion
 
-        //region Save Btn Functions
         btnSave.setOnClickListener {
-
             val engWordInput = etEngWord.text.toString().trim()
             val turWordInput = etTurWord.text.toString().trim()
             val categoryInput = etCategory.text.toString().trim()
             val samplesInput = etSamples.text.toString().trim()
             val picturePath = selectedImageUri?.toString() ?: ""
 
-            if (engWordInput.isEmpty()|| turWordInput.isEmpty()|| categoryInput.isEmpty()|| samplesInput.isEmpty()) {//Blank check
-                Toast.makeText(this, "Lütfen tüm alanları doldurun.",
-                    Toast.LENGTH_SHORT).show()
+            if (engWordInput.isEmpty() || turWordInput.isEmpty() || categoryInput.isEmpty() || samplesInput.isEmpty()) {
+                Toast.makeText(this, "Lütfen tüm alanları doldurun.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val newWord = Words(//New word object creation
-                engWordName = engWordInput,
-                turWordName = turWordInput,
-                category = categoryInput,
-                picture = picturePath
-            )
+            if (editWordId != null) {
+                wordRepo.updateWordInFirebase(
+                    wordId = editWordId!!,
+                    newEngName = engWordInput,
+                    newTurName = turWordInput,
+                    onSuccess = {
+                        showSuccessDialog(etEngWord, etTurWord, etCategory, etSamples)
+                    },
+                    onError = { message ->
+                        Toast.makeText(this, "Hata: $message", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            } else {
+                val newWord = Words(
+                    engWordName = engWordInput,
+                    turWordName = turWordInput,
+                    category = categoryInput,
+                    picture = picturePath
+                )
 
-            // Cümleleri alt satırlara göre böl ve boş olanları çıkar
-            val samplesList = samplesInput.split('\n')
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
+                val samplesList = samplesInput.split('\n')
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
 
-            wordRepo.addWord(newWord, samplesList) { isSuccess, message ->//wordRepo addWord function
-                if (isSuccess) {
-                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Hata: $message", Toast.LENGTH_SHORT).show()
+                wordRepo.addWord(newWord, samplesList) { isSuccess, message ->
+                    if (isSuccess) {
+                        showSuccessDialog(etEngWord, etTurWord, etCategory, etSamples)
+                    } else {
+                        Toast.makeText(this, "Hata: $message", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-            showSuccessDialog(etEngWord, etTurWord, etCategory, etSamples)//Success Dialog
         }
-        //endregion
     }
-    //endregion
 
-    //region Success Dialog
-    private fun showSuccessDialog(etEngWord: EditText,
-                                  etTurWord: EditText,
-                                  etCategory: EditText,
-                                  etSamples: EditText ) {
-
+    private fun showSuccessDialog(
+        etEngWord: EditText,
+        etTurWord: EditText,
+        etCategory: EditText,
+        etSamples: EditText
+    ) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Başarılı")
-        builder.setMessage("Kelime kaydedildi.")
 
-        //region Main Menu Button
-        builder.setPositiveButton("Ana Sayfaya Dön") { _, _ -> //Back to home
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-            finish()
+        if (editWordId != null) {
+            builder.setMessage("Kelime başarıyla güncellendi.")
+            builder.setPositiveButton("Kelimelerim Sayfasına Dön") { _, _ ->
+                val intent = Intent(this, WordActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+        } else {
+            builder.setMessage("Kelime kaydedildi.")
+            builder.setPositiveButton("Ana Sayfaya Dön") { _, _ ->
+                val intent = Intent(this, HomeActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+            builder.setNegativeButton("Yeni Kelime Ekle") { dialog, _ ->
+                dialog.dismiss()
+                etEngWord.text.clear()
+                etTurWord.text.clear()
+                etCategory.text.clear()
+                etSamples.text.clear()
+                findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.GONE
+            }
         }
-        //endregion
-
-        //region New Word Button
-        builder.setNegativeButton("Yeni Kelime Ekle") { dialog, _ ->//Clear all fields
-            dialog.dismiss()
-            etEngWord.text.clear()
-            etTurWord.text.clear()
-            etCategory.text.clear()
-            etSamples.text.clear()
-            findViewById<ImageView>(R.id.ivSelectedImage).visibility = ImageView.GONE//ImagePicker Clearing
-
-        }
-        //endregion
-        builder.create().show()//Dialog Show
-    }//endregion
+        builder.create().show()
+    }
 }

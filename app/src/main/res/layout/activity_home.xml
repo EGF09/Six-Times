@@ -90,16 +90,6 @@
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddWord"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
-            android:text="Yeni Kelime Ekle"
-            android:textAllCaps="false"
-            app:backgroundTint="#ff6750a4"
-            app:cornerRadius="25dp" />
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAnalysis"
             android:layout_width="match_parent"
             android:layout_height="48dp"

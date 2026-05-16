@@ -52,14 +52,16 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     private fun setupHardWordsList(recyclerView: RecyclerView) {
-        val hardWords = listOf(WordItem("Ambiguous", 15), WordItem("Persistence", 30))
+        val hardWords = mutableListOf(
+            WordItem("1", "Ambiguous", 15),
+            WordItem("2", "Persistence", 30)
+        )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = WordAdapter(hardWords)
     }
 
     private fun raporuPdfOlarakKaydet() {
         val pdfDocument = PdfDocument()
-        // A4 Boyutu: 595 x 842
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas

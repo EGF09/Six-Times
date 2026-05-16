@@ -19,7 +19,6 @@ class HomeActivity : AppCompatActivity() {
 
         val ivSettings = findViewById<ImageView>(R.id.ivSettings)
         val btnStartQuiz = findViewById<MaterialButton>(R.id.btnStartQuiz)
-        val btnAddWord = findViewById<MaterialButton>(R.id.btnAddWord)
         val btnAnalysis = findViewById<MaterialButton>(R.id.btnAnalysis)
         val btnMyWords = findViewById<MaterialButton>(R.id.btnMyWords)
         val btnWordle = findViewById<MaterialButton>(R.id.btnWordle)
@@ -31,10 +30,6 @@ class HomeActivity : AppCompatActivity() {
 
         btnStartQuiz.setOnClickListener {
             startActivity(Intent(this, ExamActivity::class.java))
-        }
-
-        btnAddWord.setOnClickListener {
-            startActivity(Intent(this, AddWordActivity::class.java))
         }
 
         btnAnalysis.setOnClickListener {

@@ -33,6 +33,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".menunav.EditWordActivity" android:exported="false" />
+
         <activity
             android:name=".menunav.HomeActivity"
             android:exported="false"
