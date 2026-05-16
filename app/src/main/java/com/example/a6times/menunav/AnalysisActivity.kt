@@ -68,7 +68,7 @@ class AnalysisActivity : AppCompatActivity() {
         currentTotalWords = words.size
         // İlerleme kaydedilmiş (progress > 0) kelimeleri doğru bilinmiş olarak varsayıyoruz
         val correctWords = words.count { it.progress > 0 }
-        
+
         currentOverallAccuracy = if (currentTotalWords > 0) {
             ((correctWords.toDouble() / currentTotalWords.toDouble()) * 100).toInt()
         } else {
@@ -85,17 +85,17 @@ class AnalysisActivity : AppCompatActivity() {
     private fun calculateTopicProgress(words: List<com.example.a6times.data.Words>): List<com.example.a6times.data.TopicProgress> {
         val groupedByCategory = words.groupBy { it.category }
         val progressList = mutableListOf<com.example.a6times.data.TopicProgress>()
-        
+
         for ((category, categoryWords) in groupedByCategory) {
             val totalCount = categoryWords.size
             val correctCount = categoryWords.count { it.progress > 0 }
-            
+
             val percentage = if (totalCount > 0) {
                 ((correctCount.toDouble() / totalCount.toDouble()) * 100).toInt()
             } else {
                 0
             }
-            
+
             val topicName = if (category.isNotEmpty()) category else "Diğer"
             progressList.add(
                 com.example.a6times.data.TopicProgress(
@@ -106,7 +106,7 @@ class AnalysisActivity : AppCompatActivity() {
                 )
             )
         }
-        
+
         return progressList.sortedByDescending { it.progressPercentage }
     }
 
