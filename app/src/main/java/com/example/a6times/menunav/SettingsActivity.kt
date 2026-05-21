@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.a6times.R
+import com.example.a6times.loginnav.LoginActivity
 import com.google.android.material.button.MaterialButton
 
 class SettingsActivity : AppCompatActivity() {
@@ -51,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         btnLogout.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
