@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="#08080C"
     android:fillViewport="true">
 
     <LinearLayout
@@ -17,9 +17,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="#ff6750a4"
+            android:backgroundTint="#00F0FF"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="#FFFFFF"
+            app:tint="#08080C"
             android:contentDescription="Geri Dön" />
 
         <TextView
@@ -36,41 +36,41 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#ff6750a4"
+            android:backgroundTint="#00F0FF"
             android:hint="İngilizce Kelime"
             android:textColor="#FFFFFF"
-            android:textColorHint="#888888" />
+            android:textColorHint="#666677" />
 
         <EditText
             android:id="@+id/etTurWord"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#ff6750a4"
+            android:backgroundTint="#00F0FF"
             android:hint="Türkçe Karşılığı"
             android:textColor="#FFFFFF"
-            android:textColorHint="#888888" />
+            android:textColorHint="#666677" />
 
         <EditText
             android:id="@+id/etCategory"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#ff6750a4"
+            android:backgroundTint="#00F0FF"
             android:hint="Kategori"
             android:textColor="#FFFFFF"
-            android:textColorHint="#888888" />
+            android:textColorHint="#666677" />
 
         <EditText
             android:id="@+id/etSamples"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#ff6750a4"
+            android:backgroundTint="#00F0FF"
             android:gravity="top"
             android:hint="Örnek Cümleler"
             android:textColor="#FFFFFF"
-            android:textColorHint="#888888" />
+            android:textColorHint="#666677" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSelectImage"
@@ -78,7 +78,9 @@
             android:layout_height="40dp"
             android:layout_marginBottom="12dp"
             android:text="Resim Seç"
-            app:backgroundTint="#1E1E1E"
+            android:textColor="#08080C"
+            app:iconTint="#08080C"
+            app:backgroundTint="#00F0FF"
             app:cornerRadius="12dp"
             app:icon="@android:drawable/ic_menu_gallery" />
 
@@ -95,7 +97,10 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:text="Kelimeyi Kaydet"
-            app:backgroundTint="#ff6750a4"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:backgroundTint="#FF007A"
             app:cornerRadius="30dp" />
 
     </LinearLayout>

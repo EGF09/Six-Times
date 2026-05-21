@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#040303"
+    android:background="#08080C"
     tools:context=".loginnav.ForgotActivity">
 
     <TextView
@@ -29,6 +29,7 @@
         android:ems="10"
         android:inputType="text"
         android:textColor="#FFFFFF"
+        android:backgroundTint="#00F0FF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,6 +42,9 @@
         android:layout_marginTop="104dp"
         android:layout_marginEnd="135dp"
         android:text="Şifreyi Değiştir"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#FF007A"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailForgot" />
@@ -51,11 +55,11 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#ff6750a4"
+        android:backgroundTint="#00F0FF"
         android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF"
+        app:tint="#08080C"
         android:contentDescription="Geri Dön" />
 
     <ImageView
@@ -63,9 +67,9 @@
         android:layout_width="21dp"
         android:layout_height="17dp"
         android:layout_marginStart="4dp"
-        android:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@android:drawable/ic_dialog_email"
+        app:tint="#00F0FF" />
 </androidx.constraintlayout.widget.ConstraintLayout>

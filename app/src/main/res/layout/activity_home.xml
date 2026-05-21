@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="#08080C"
     android:fillViewport="true"
     android:scrollbars="none">
 
@@ -32,14 +32,14 @@
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
                 android:src="@android:drawable/ic_menu_manage"
-                app:tint="#ff6750a4" />
+                app:tint="#00F0FF" />
         </RelativeLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="#1E1E1E"
+            app:cardBackgroundColor="#12121A"
             app:cardCornerRadius="12dp">
 
             <LinearLayout
@@ -55,7 +55,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Öğrenme İlerlemesi"
-                        android:textColor="#BDBDBD"
+                        android:textColor="#888899"
                         android:textSize="14sp" />
                     <TextView
                         android:id="@+id/tvProgressPercent"
@@ -63,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:text="%40"
-                        android:textColor="#ff6750a4"
+                        android:textColor="#FF007A"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </RelativeLayout>
@@ -75,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:progress="40"
-                    android:progressTint="#ff6750a4" />
+                    android:progressTint="#FF007A" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -86,7 +86,9 @@
             android:layout_marginBottom="8dp"
             android:text="Sınavı Başlat (6 Sefer Tekrar)"
             android:textAllCaps="false"
-            app:backgroundTint="#ff6750a4"
+            android:textColor="#08080C"
+            android:textStyle="bold"
+            app:backgroundTint="#00F0FF"
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -96,7 +98,9 @@
             android:layout_marginBottom="8dp"
             android:text="Başarı Analiz Raporu"
             android:textAllCaps="false"
-            app:backgroundTint="#ff6750a4"
+            android:textColor="#08080C"
+            android:textStyle="bold"
+            app:backgroundTint="#00F0FF"
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -106,7 +110,9 @@
             android:layout_marginBottom="8dp"
             android:text="Kelime Bulmaca (Wordle)"
             android:textAllCaps="false"
-            app:backgroundTint="#ff6750a4"
+            android:textColor="#08080C"
+            android:textStyle="bold"
+            app:backgroundTint="#00F0FF"
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -116,7 +122,9 @@
             android:layout_marginBottom="24dp"
             android:text="Kelimelerim"
             android:textAllCaps="false"
-            app:backgroundTint="#ff6750a4"
+            android:textColor="#08080C"
+            android:textStyle="bold"
+            app:backgroundTint="#00F0FF"
             app:cornerRadius="25dp" />
 
         <TextView
@@ -133,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginBottom="32dp"
-            app:cardBackgroundColor="#1E1E1E"
+            app:cardBackgroundColor="#12121A"
             app:cardCornerRadius="12dp"
             android:clickable="true"
             android:focusable="true"
@@ -151,13 +159,13 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#B3000000" />
+                    android:background="#B308080C" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="Hikayeni Görmek İçin Tıkla"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#00F0FF"
                     android:textStyle="bold" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>

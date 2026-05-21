@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="#08080C"
     android:orientation="vertical"
     android:padding="20dp">
 
@@ -13,9 +13,10 @@
         android:layout_height="56dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/rounded_button_background"
+        android:backgroundTint="#12121A"
         android:src="@android:drawable/ic_menu_revert"
         android:contentDescription="Geri Dön"
-        app:tint="#FFFFFF" />
+        app:tint="#00F0FF" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -47,19 +48,19 @@
             android:layout_width="80dp"
             android:layout_height="50dp"
             android:background="@drawable/rounded_button_background"
-            android:backgroundTint="#1E1E1E"
+            android:backgroundTint="#12121A"
             android:gravity="center"
             android:hint="10"
             android:inputType="number"
             android:textColor="#FFFFFF"
-            android:textColorHint="#888888" />
+            android:textColorHint="#444455" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:text="soru"
-            android:textColor="#888888"
+            android:textColor="#888899"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -67,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="10dp"
-        android:background="#333333" />
+        android:background="#222233" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnClearData"
@@ -77,7 +78,8 @@
         android:gravity="start|center_vertical"
         android:text="Tüm Verileri Sıfırla"
         android:textAllCaps="false"
-        android:textColor="#FF5252" />
+        android:textColor="#FF0055"
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
@@ -87,8 +89,9 @@
         android:gravity="start|center_vertical"
         android:text="Çıkış Yap"
         android:textAllCaps="false"
-        android:textColor="#FF1744"
+        android:textColor="#FF0055"
+        android:textStyle="bold"
         app:icon="@android:drawable/ic_lock_power_off"
-        app:iconTint="#FF1744" />
+        app:iconTint="#FF0055" />
 
 </LinearLayout>

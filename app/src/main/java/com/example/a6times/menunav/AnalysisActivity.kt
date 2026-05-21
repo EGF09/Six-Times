@@ -30,7 +30,7 @@ class AnalysisActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analysis)
 
-        val btnBack = findViewById<ImageButton>(R.id.btnAnalysisBack)
+        val btnBack = findViewById<ImageButton>(R.id.WordBackButton)
         btnBack.setOnClickListener { finish() }
 
         val btnPrint = findViewById<ImageButton>(R.id.btnPrintReport)

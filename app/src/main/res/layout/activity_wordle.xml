@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="#08080C"
     android:padding="16dp">
 
     <ImageButton
@@ -12,11 +13,11 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#ff6750a4"
+        android:backgroundTint="#00F0FF"
         android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF"
+        app:tint="#08080C"
         android:contentDescription="Geri Dön" />
 
     <TextView
@@ -68,11 +69,12 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@drawable/bg_edittext_wordle"
+            android:backgroundTint="#00F0FF"
             android:hint="Tahmininizi Yazın"
             android:gravity="center"
             android:inputType="textCapCharacters"
             android:textColor="#FFFFFF"
-            android:textColorHint="#808080" />
+            android:textColorHint="#444455" />
 
         <Button
             android:id="@+id/btnSubmitGuess"
@@ -81,7 +83,9 @@
             android:layout_marginTop="12dp"
             android:text="Tahmin Et"
             android:textAllCaps="false"
-            app:backgroundTint="#6750a4"
+            android:textColor="#08080C"
+            android:textStyle="bold"
+            app:backgroundTint="#00F0FF"
             app:cornerRadius="12dp" />
     </LinearLayout>
 

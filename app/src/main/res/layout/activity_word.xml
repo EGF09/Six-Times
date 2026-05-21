@@ -4,18 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="#08080C"
     android:padding="16dp">
 
     <ImageButton
         android:id="@+id/WordBackButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:backgroundTint="#ff6750a4"
+        android:backgroundTint="#00F0FF"
         android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#FFFFFF"
+        app:tint="#08080C"
         android:contentDescription="Geri Dön" />
 
     <TextView
@@ -30,7 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/WordBackButton" />
 
-    <!-- RecyclerView'ın alt sınırını buton grubunun üstüne çektik (layout_marginBottom eklendi) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvWords"
         android:layout_width="0dp"
@@ -50,8 +49,8 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="Kelime Ekle"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="#ff6750a4"
-        app:tint="#FFFFFF"
+        app:backgroundTint="#00F0FF"
+        app:tint="#08080C"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/fabEditWord"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -65,8 +64,8 @@
         android:layout_marginStart="16dp"
         android:contentDescription="Kelime Düzenle"
         android:src="@android:drawable/ic_menu_edit"
-        app:backgroundTint="#ff6750a4"
-        app:tint="#FFFFFF"
+        app:backgroundTint="#00F0FF"
+        app:tint="#08080C"
         app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

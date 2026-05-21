@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0/0 (%0)"
-            android:textColor="#BBBBBB"
+            android:textColor="#888899"
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -40,7 +40,9 @@
         android:layout_height="8dp"
         android:layout_marginTop="12dp"
         android:max="100"
-        android:progress="0"
+        android:progress="50"
+        android:backgroundTint="#12121A"
+        android:progressTint="#00F0FF"
         android:progressDrawable="@drawable/custom_progress_bar" />
 
 </LinearLayout>
