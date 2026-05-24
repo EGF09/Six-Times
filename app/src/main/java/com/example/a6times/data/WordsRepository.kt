@@ -233,4 +233,31 @@ class WordsRepository {
             }
         })
     }
+
+    fun getWordSamples(wordId: Int, onComplete: (List<String>) -> Unit) {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            onComplete(emptyList())
+            return
+        }
+
+        databaseRef.child("Words").child(userId).child(wordId.toString()).child("samples")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val samples = mutableListOf<String>()
+                    for (child in snapshot.children) {
+                        val text = child.child("sample").getValue(String::class.java)
+                            ?: child.getValue(String::class.java)
+                        if (text != null) {
+                            samples.add(text)
+                        }
+                    }
+                    onComplete(samples)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    onComplete(emptyList())
+                }
+            })
+    }
 }
