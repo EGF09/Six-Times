@@ -8,68 +8,72 @@
     android:background="#08080C"
     tools:context=".loginnav.ForgotActivity">
 
+    <ImageButton
+        android:id="@+id/ForgotBackButton"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_neon_back"
+        android:contentDescription="Geri Dön"
+        android:src="@android:drawable/ic_menu_revert"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#00F0FF" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView"
+        app:srcCompat="@android:drawable/ic_dialog_email"
+        app:tint="#00F0FF" />
+
     <TextView
         android:id="@+id/textView"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginStart="3dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="75dp"
-        android:gravity="right|center_vertical"
-        android:text="Email:  "
+        android:gravity="center_vertical"
+        android:text="Email: "
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/emailForgot"
-        android:layout_width="236dp"
+        android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginTop="75dp"
-        android:layout_marginEnd="42dp"
-        android:ems="10"
-        android:inputType="text"
-        android:textColor="#FFFFFF"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="24dp"
         android:backgroundTint="#00F0FF"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/ChangePasswordButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="136dp"
-        android:layout_marginTop="104dp"
-        android:layout_marginEnd="135dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/bg_neon_filled_stroke"
+        android:textAllCaps="false"
         android:text="Şifreyi Değiştir"
         android:textColor="#FFFFFF"
+        android:textSize="15sp"
         android:textStyle="bold"
-        android:backgroundTint="#FF007A"
+        app:backgroundTint="@null"
+        app:cornerRadius="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailForgot" />
 
-    <ImageButton
-        android:id="@+id/ForgotBackButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#00F0FF"
-        android:src="@android:drawable/ic_menu_revert"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#08080C"
-        android:contentDescription="Geri Dön" />
-
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="21dp"
-        android:layout_height="17dp"
-        android:layout_marginStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView"
-        app:srcCompat="@android:drawable/ic_dialog_email"
-        app:tint="#00F0FF" />
 </androidx.constraintlayout.widget.ConstraintLayout>

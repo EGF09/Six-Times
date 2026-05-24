@@ -3,6 +3,7 @@ package com.example.a6times
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -16,24 +17,34 @@ import com.google.android.material.button.MaterialButton
 
 class ExamActivity : AppCompatActivity() {
 
+    private val PRIMARY_COLOR = "#00F0FF"
+
     private lateinit var tvQuestionCount: TextView
     private lateinit var tvQuestionWord: TextView
+
     private lateinit var btnOption1: MaterialButton
     private lateinit var btnOption2: MaterialButton
     private lateinit var btnOption3: MaterialButton
+
     private lateinit var btnNextQuestion: MaterialButton
+    private lateinit var btnFinishExam: MaterialButton
+
     private lateinit var examProgressBar: ProgressBar
 
     private val wordsRepository = WordsRepository()
+
     private var allWords = listOf<Words>()
     private var examWords = listOf<Words>()
-    
+
     private var currentQuestionIndex = 0
     private var correctAnswersCount = 0
+
     private var selectedOptionIndex = -1
     private var isAnswerChecked = false
 
     private lateinit var currentOptions: List<String>
+
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,13 +52,15 @@ class ExamActivity : AppCompatActivity() {
 
         tvQuestionCount = findViewById(R.id.tvQuestionCount)
         tvQuestionWord = findViewById(R.id.tvQuestionWord)
+
         btnOption1 = findViewById(R.id.btnOption1)
         btnOption2 = findViewById(R.id.btnOption2)
         btnOption3 = findViewById(R.id.btnOption3)
+
         btnNextQuestion = findViewById(R.id.btnNextQuestion)
+        btnFinishExam = findViewById(R.id.btnFinishExam)
+
         examProgressBar = findViewById(R.id.examProgressBar)
-        
-        val btnFinishExam = findViewById<MaterialButton>(R.id.btnFinishExam)
 
         btnNextQuestion.isEnabled = false
 
@@ -56,19 +69,15 @@ class ExamActivity : AppCompatActivity() {
         }
 
         btnNextQuestion.setOnClickListener {
-            if (!isAnswerChecked) {
-                checkAnswer()
-            } else {
-                goToNextQuestion()
-            }
+            if (!isAnswerChecked) checkAnswer()
+            else goToNextQuestion()
         }
 
         val options = listOf(btnOption1, btnOption2, btnOption3)
-        for (i in options.indices) {
-            options[i].setOnClickListener {
-                if (!isAnswerChecked) {
-                    selectOption(i)
-                }
+
+        options.forEachIndexed { index, button ->
+            button.setOnClickListener {
+                if (!isAnswerChecked) selectOption(index)
             }
         }
 
@@ -78,128 +87,144 @@ class ExamActivity : AppCompatActivity() {
     private fun loadWords() {
         wordsRepository.listenToWords(
             onDataChange = { words ->
-                if (allWords.isEmpty()) { 
+                if (allWords.isEmpty()) {
                     allWords = words
                     val readyWords = wordsRepository.getExamReadyWords(words)
-                    
-                    val sharedPref = getSharedPreferences("AppSettings", android.content.Context.MODE_PRIVATE)
-                    val questionLimit = sharedPref.getInt("ExamQuestionLimit", 10)
 
-                    // Şıkların (3 seçenek) dolabilmesi için tüm kelimelerin (allWords) en az 3 tane olması gerekir.
+                    val limit = getSharedPreferences("AppSettings", MODE_PRIVATE)
+                        .getInt("ExamQuestionLimit", 10)
+
                     if (allWords.size < 3) {
-                        Toast.makeText(this, "Sınav için sözlüğünüze toplam en az 3 kelime eklemelisiniz.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Sınav için havuzda en az 3 kelime olmalı!", Toast.LENGTH_SHORT).show()
                         finish()
                         return@listenToWords
                     }
 
-                    // Sınava girmek için, vakti gelmiş kelimelerin ayarlardaki limit kadar olması gerekir.
-                    if (readyWords.size >= questionLimit) {
-                        startExam(readyWords, questionLimit)
+                    if (readyWords.size >= limit) {
+                        startExam(readyWords, limit)
                     } else {
-                        Toast.makeText(this, "Sınav için en az $questionLimit kelimenin vakti gelmiş olmalı. (Şu an ${readyWords.size} kelime hazır)", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Sınava hazır yeterli kelimeniz yok!", Toast.LENGTH_SHORT).show()
                         finish()
                     }
                 }
             },
-            onError = { error ->
-                Toast.makeText(this, "Hata: $error", Toast.LENGTH_SHORT).show()
-            }
+            onError = { finish() }
         )
     }
 
     private fun startExam(readyWords: List<Words>, limit: Int) {
         examWords = readyWords.shuffled().take(limit)
-        
         currentQuestionIndex = 0
         correctAnswersCount = 0
+
         examProgressBar.max = examWords.size
         loadQuestion()
     }
 
     private fun loadQuestion() {
         if (currentQuestionIndex >= examWords.size) {
-            finishExam()
+            showExamCompleteDialog()
             return
         }
 
         isAnswerChecked = false
         selectedOptionIndex = -1
+
         btnNextQuestion.text = "Kontrol Et"
         btnNextQuestion.isEnabled = false
 
-        val currentWord = examWords[currentQuestionIndex]
-        tvQuestionWord.text = currentWord.engWordName
-        
+        val word = examWords[currentQuestionIndex]
+
+        tvQuestionWord.text = word.engWordName
         tvQuestionCount.text = "Soru: ${currentQuestionIndex + 1} / ${examWords.size}"
+
         examProgressBar.progress = currentQuestionIndex
 
-        val wrongAnswers = allWords.filter { it.wordID != currentWord.wordID }.shuffled().take(2).map { it.turWordName }
-        // Şıkların sayısı her zaman 3 olması için wrongAnswers listesi 2 adet olmalı (toplam en az 3 kelime olduğu için güvenli)
-        currentOptions = (wrongAnswers + currentWord.turWordName).shuffled()
+        val wrong = allWords
+            .filter { it.wordID != word.wordID }
+            .shuffled()
+            .take(2)
+            .map { it.turWordName }
+
+        val optionsList = (wrong + word.turWordName).shuffled()
+        if (optionsList.size < 3) {
+            Toast.makeText(this, "Yeterli seçenek oluşturulamadı.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        currentOptions = optionsList
 
         btnOption1.text = currentOptions[0]
         btnOption2.text = currentOptions[1]
         btnOption3.text = currentOptions[2]
 
-        resetOptionStyles()
+        resetUI()
     }
 
     private fun selectOption(index: Int) {
         selectedOptionIndex = index
         btnNextQuestion.isEnabled = true
-        resetOptionStyles()
-        
-        val options = listOf(btnOption1, btnOption2, btnOption3)
-        // Seçili butonu vurgula
-        options[index].strokeColor = ColorStateList.valueOf(Color.parseColor("#BB86FC")) // Mor çerçeve
-        options[index].setTextColor(Color.parseColor("#BB86FC"))
+
+        resetUI()
+
+        val buttons = listOf(btnOption1, btnOption2, btnOption3)
+
+        buttons[index].strokeColor =
+            ColorStateList.valueOf(Color.parseColor(PRIMARY_COLOR))
+
+        buttons[index].setTextColor(Color.parseColor(PRIMARY_COLOR))
     }
 
-    private fun resetOptionStyles() {
-        val options = listOf(btnOption1, btnOption2, btnOption3)
-        for (btn in options) {
-            btn.strokeColor = ColorStateList.valueOf(Color.parseColor("#333333")) // Normal çerçeve
-            btn.setTextColor(Color.parseColor("#FFFFFF"))
-            btn.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+    private fun resetUI() {
+        val buttons = listOf(btnOption1, btnOption2, btnOption3)
+        buttons.forEach {
+            it.strokeColor = ColorStateList.valueOf(Color.parseColor("#333333"))
+            it.setTextColor(Color.WHITE)
+            it.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
         }
     }
 
     private fun checkAnswer() {
+        if (selectedOptionIndex == -1) return
+
         isAnswerChecked = true
         btnNextQuestion.text = "Sonraki"
-        
-        val currentWord = examWords[currentQuestionIndex]
-        val options = listOf(btnOption1, btnOption2, btnOption3)
-        
-        if (selectedOptionIndex != -1) {
-            val selectedAnswer = currentOptions[selectedOptionIndex]
-            val isCorrect = selectedAnswer == currentWord.turWordName
-            
-            if (isCorrect) {
-                // Doğru cevaplandı
-                options[selectedOptionIndex].strokeColor = ColorStateList.valueOf(Color.parseColor("#4CAF50")) // Yeşil
-                options[selectedOptionIndex].setTextColor(Color.parseColor("#4CAF50"))
-                // Background tint vererek içerisini de doldurabiliriz. (isteğe bağlı)
-                options[selectedOptionIndex].backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1A4CAF50"))
-                correctAnswersCount++
-            } else {
-                // Yanlış cevaplandı
-                options[selectedOptionIndex].strokeColor = ColorStateList.valueOf(Color.parseColor("#F44336")) // Kırmızı
-                options[selectedOptionIndex].setTextColor(Color.parseColor("#F44336"))
-                options[selectedOptionIndex].backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AF44336"))
-                
-                // Doğru cevabı göster
-                val correctIndex = currentOptions.indexOf(currentWord.turWordName)
-                if (correctIndex != -1) {
-                    options[correctIndex].strokeColor = ColorStateList.valueOf(Color.parseColor("#4CAF50")) // Yeşil
-                    options[correctIndex].setTextColor(Color.parseColor("#4CAF50"))
-                    options[correctIndex].backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1A4CAF50"))
-                }
-            }
 
-            // Aralıklı tekrar sistemini (Spaced Repetition) Firebase'de güncelle
-            wordsRepository.updateWordProgress(currentWord, isCorrect)
+        val word = examWords[currentQuestionIndex]
+        val buttons = listOf(btnOption1, btnOption2, btnOption3)
+
+        val selected = currentOptions[selectedOptionIndex]
+        val correct = word.turWordName
+
+        val correctIndex = currentOptions.indexOf(correct)
+
+        if (selected == correct) {
+            playRawSound(R.raw.correct_sound)
+
+            buttons[selectedOptionIndex].strokeColor =
+                ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+
+            buttons[selectedOptionIndex].setTextColor(Color.parseColor("#4CAF50"))
+
+            correctAnswersCount++
+
+        } else {
+            playRawSound(R.raw.exam_fail)
+
+            buttons[selectedOptionIndex].strokeColor =
+                ColorStateList.valueOf(Color.parseColor("#F44336"))
+
+            buttons[selectedOptionIndex].setTextColor(Color.parseColor("#F44336"))
+
+            if (correctIndex != -1) {
+                buttons[correctIndex].strokeColor =
+                    ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+
+                buttons[correctIndex].setTextColor(Color.parseColor("#4CAF50"))
+            }
         }
+
+        wordsRepository.updateWordProgress(word, selected == correct)
     }
 
     private fun goToNextQuestion() {
@@ -208,25 +233,56 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun showFinishDialog() {
-        val intent = Intent(this, AnalysisActivity::class.java)
         AlertDialog.Builder(this)
             .setTitle("Sınavı Bitir")
-            .setMessage("Sınavdan çıkıp başarı raporuna gitmek istediğinize emin misiniz?")
-            .setPositiveButton("Evet, Raporu Gör") { _, _ ->
-                intent.putExtra("correctCount", correctAnswersCount)
-                intent.putExtra("totalCount", currentQuestionIndex)
-                startActivity(intent)
-                finish()
+            .setMessage("Sınavı bitir ve başarı analiz raporunu görüntüle?")
+            .setPositiveButton("Evet") { _, _ ->
+                finishExam()
             }
             .setNegativeButton("Devam Et", null)
             .show()
     }
-    
+
+    private fun showExamCompleteDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Sınav Tamamlandı! 🎉")
+            .setMessage("Tebrikler, sınavı başarıyla bitirdiniz! Başarı analiz raporunuzu görüntülemek ister misiniz?")
+            .setCancelable(false)
+            .setPositiveButton("Raporu Gör") { _, _ ->
+                finishExam()
+            }
+            .setNegativeButton("Daha Sonra") { _, _ ->
+                finish()
+            }
+            .show()
+    }
+
     private fun finishExam() {
         val intent = Intent(this, AnalysisActivity::class.java)
         intent.putExtra("correctCount", correctAnswersCount)
         intent.putExtra("totalCount", examWords.size)
         startActivity(intent)
         finish()
+    }
+
+    private fun playRawSound(resourceId: Int) {
+        try {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+
+            mediaPlayer = MediaPlayer.create(this, resourceId)
+            mediaPlayer?.setOnPreparedListener { mp ->
+                mp.start()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }

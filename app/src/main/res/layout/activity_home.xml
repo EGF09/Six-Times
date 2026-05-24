@@ -18,19 +18,54 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hoş Geldin!"
-                android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hoş Geldin!"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp">
+
+                    <ImageView
+                        android:id="@+id/ivStreakFlame"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/btn_star_big_on"
+                        app:tint="#FF9800" />
+
+                    <TextView
+                        android:id="@+id/tvStreakCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="1dp"
+                        android:text="0"
+                        android:textColor="#08080C"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/ivSettings"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:src="@android:drawable/ic_menu_manage"
                 app:tint="#00F0FF" />
         </RelativeLayout>
@@ -39,12 +74,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="#12121A"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_neon_card"
                 android:orientation="vertical"
                 android:padding="12dp">
 
@@ -82,49 +118,57 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStartQuiz"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="14dp"
             android:text="Sınavı Başlat (6 Sefer Tekrar)"
             android:textAllCaps="false"
             android:textColor="#08080C"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:backgroundTint="#00F0FF"
+            android:background="@drawable/bg_neon_button"
+            app:backgroundTint="@null"
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAnalysis"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="14dp"
             android:text="Başarı Analiz Raporu"
             android:textAllCaps="false"
             android:textColor="#08080C"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:backgroundTint="#00F0FF"
+            android:background="@drawable/bg_neon_button"
+            app:backgroundTint="@null"
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnWordle"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="14dp"
             android:text="Kelime Bulmaca (Wordle)"
             android:textAllCaps="false"
             android:textColor="#08080C"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:backgroundTint="#00F0FF"
+            android:background="@drawable/bg_neon_button"
+            app:backgroundTint="@null"
             app:cornerRadius="25dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMyWords"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="50dp"
             android:layout_marginBottom="24dp"
             android:text="Kelimelerim"
             android:textAllCaps="false"
             android:textColor="#08080C"
+            android:textSize="15sp"
             android:textStyle="bold"
-            app:backgroundTint="#00F0FF"
+            android:background="@drawable/bg_neon_button"
+            app:backgroundTint="@null"
             app:cornerRadius="25dp" />
 
         <TextView
@@ -141,7 +185,6 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginBottom="32dp"
-            app:cardBackgroundColor="#12121A"
             app:cardCornerRadius="12dp"
             android:clickable="true"
             android:focusable="true"
@@ -149,7 +192,10 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_neon_card"
+                android:padding="2dp">
+
                 <ImageView
                     android:id="@+id/ivStoryPreview"
                     android:layout_width="match_parent"

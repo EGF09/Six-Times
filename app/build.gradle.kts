@@ -5,13 +5,11 @@ plugins {
 
 android {
     namespace = "com.example.a6times"
-    // Hata veren kütüphanelerin isteği üzerine 36 yapıldı
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.a6times"
         minSdk = 24
-        // Uygulamanın hedeflediği davranış sürümü 34 olarak kalabilir
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -57,16 +55,12 @@ dependencies {
     implementation(libs.firebase.database)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
+    implementation("nl.dionsegijn:konfetti-xml:2.0.4")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
-
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-
-
 }

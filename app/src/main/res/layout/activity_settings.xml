@@ -9,11 +9,10 @@
 
     <ImageButton
         android:id="@+id/btnBack"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/rounded_button_background"
-        android:backgroundTint="#12121A"
+        android:background="@drawable/bg_neon_back"
         android:src="@android:drawable/ic_menu_revert"
         android:contentDescription="Geri Dön"
         app:tint="#00F0FF" />
@@ -31,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="12dp"
         android:text="Sınav Soru Sınırı"
         android:textColor="#FFFFFF"
         android:textSize="18sp" />
@@ -40,20 +39,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center_vertical">
 
         <EditText
             android:id="@+id/etExamQuestionLimit"
             android:layout_width="80dp"
             android:layout_height="50dp"
-            android:background="@drawable/rounded_button_background"
-            android:backgroundTint="#12121A"
+            android:background="@drawable/bg_neon_button"
             android:gravity="center"
             android:hint="10"
             android:inputType="number"
             android:textColor="#FFFFFF"
-            android:textColorHint="#444455" />
+            android:textColorHint="#444455"
+            android:padding="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -67,7 +66,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginVertical="12dp"
         android:background="#222233" />
 
     <com.google.android.material.button.MaterialButton
@@ -79,7 +78,9 @@
         android:text="Tüm Verileri Sıfırla"
         android:textAllCaps="false"
         android:textColor="#FF0055"
-        android:textStyle="bold" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:rippleColor="#22FF0055" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
@@ -90,8 +91,10 @@
         android:text="Çıkış Yap"
         android:textAllCaps="false"
         android:textColor="#FF0055"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:icon="@android:drawable/ic_lock_power_off"
-        app:iconTint="#FF0055" />
+        app:iconTint="#FF0055"
+        app:rippleColor="#22FF0055" />
 
 </LinearLayout>

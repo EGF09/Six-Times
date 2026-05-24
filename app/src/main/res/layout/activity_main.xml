@@ -83,43 +83,54 @@
         app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/emailLogin" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/GirisYapButton"
         android:layout_width="259dp"
-        android:layout_height="61dp"
+        android:layout_height="54dp"
         android:layout_marginTop="46dp"
         android:text="Giriş Yap"
         android:textColor="#08080C"
+        android:textSize="15sp"
         android:textStyle="bold"
-        android:backgroundTint="#00F0FF"
+        android:textAllCaps="false"
+        android:background="@drawable/bg_neon_button"
+        app:backgroundTint="@null"
+        app:cornerRadius="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/KayitOlButton"
         android:layout_width="163dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="21dp"
         android:text="Kayıt Ol"
         android:textColor="#08080C"
+        android:textSize="15sp"
         android:textStyle="bold"
-        android:backgroundTint="#00F0FF"
+        android:textAllCaps="false"
+        android:background="@drawable/bg_neon_button"
+        app:backgroundTint="@null"
+        app:cornerRadius="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GirisYapButton" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/SifremiUnuttumButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="21dp"
-        android:background="#00FFFFFF"
         android:text="Şifremi Unuttum"
         android:textColor="#FF007A"
+        android:textSize="14sp"
         android:textStyle="bold"
+        android:textAllCaps="false"
+        app:backgroundTint="#00FFFFFF"
+        app:rippleColor="#22FF007A"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/KayitOlButton" />
