@@ -1,10 +1,13 @@
 package com.example.a6times.menunav
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import coil.load
 import com.example.a6times.ExamActivity
 import com.example.a6times.R
 import com.example.a6times.WordActivity
@@ -47,6 +50,24 @@ class HomeActivity : AppCompatActivity() {
         cardAiStory.setOnClickListener {
             val intent = Intent(this, StoryDetailActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        
+        // Load the previous image state to show the previous visual on the Home screen
+        val sharedPrefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
+        val lastImageUrl = sharedPrefs.getString("lastImageUrl", null)
+        
+        if (lastImageUrl != null) {
+            val ivStoryPreview = findViewById<ImageView>(R.id.ivStoryPreview)
+            
+            // Load the actual saved image URL into the ImageView
+            // The black overlay in the XML layout will act as the "dimming/blurring" effect
+            ivStoryPreview.load(lastImageUrl) {
+                crossfade(true)
+            }
         }
     }
 }
