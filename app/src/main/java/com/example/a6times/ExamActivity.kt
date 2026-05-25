@@ -102,7 +102,7 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun loadWords() {
-        wordsRepository.listenToWords(
+        wordsRepository.getWordsOnce(
             onDataChange = { words ->
                 if (allWords.isEmpty()) { 
                     allWords = words
@@ -115,7 +115,7 @@ class ExamActivity : AppCompatActivity() {
                     if (allWords.size < 3) {
                         Toast.makeText(this, "Sınav için sözlüğünüze toplam en az 3 kelime eklemelisiniz.", Toast.LENGTH_LONG).show()
                         finish()
-                        return@listenToWords
+                        return@getWordsOnce
                     }
 
                     // Sınava girmek için, vakti gelmiş kelimelerin ayarlardaki limit kadar olması gerekir.
@@ -169,15 +169,18 @@ class ExamActivity : AppCompatActivity() {
         tvHintSentence.text = ""
 
         // Handle Image
+        btnToggleImage.visibility = View.VISIBLE
         if (currentWord.picture.isNotEmpty()) {
-            btnToggleImage.visibility = View.VISIBLE
             ivQuestionImage.load(currentWord.picture) {
                 crossfade(true)
                 placeholder(android.R.color.transparent)
                 error(android.R.color.transparent)
             }
         } else {
-            btnToggleImage.visibility = View.GONE
+            // Load a default warning/question mark image if no picture is available
+            ivQuestionImage.load(android.R.drawable.ic_menu_help) {
+                crossfade(true)
+            }
         }
 
         // Handle Hint

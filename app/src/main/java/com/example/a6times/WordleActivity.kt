@@ -73,16 +73,16 @@ class WordleActivity : AppCompatActivity() {
 
     //region Kelime Kontrolü
     private fun fetchDailyWord() {
-        wordsRepository.listenToWords(
+        wordsRepository.getWordsOnce(
             onDataChange = { wordsList ->
-                if (isGameInitialized) return@listenToWords
+                if (isGameInitialized) return@getWordsOnce
                 
                 val learnedWords = wordsList.filter { it.isLearned || it.progress >= 6 }
                     .sortedBy { it.wordID }
 
                 if (learnedWords.isEmpty()) {
                     Toast.makeText(this, "Henüz 6 aşamayı tamamlamış kelimeniz yok!", Toast.LENGTH_LONG).show()
-                    return@listenToWords
+                    return@getWordsOnce
                 }
 
                 val epochDays = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
@@ -93,7 +93,7 @@ class WordleActivity : AppCompatActivity() {
 
                 if (targetWord.isEmpty()) {
                     Toast.makeText(this, "Kelime formatı uygun değil.", Toast.LENGTH_SHORT).show()
-                    return@listenToWords
+                    return@getWordsOnce
                 }
                 
                 isGameInitialized = true

@@ -110,6 +110,32 @@ class WordsRepository {
         })
     }
 
+    fun getWordsOnce(onDataChange: (List<Words>) -> Unit, onError: (String) -> Unit) {
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            onError("Kullanıcı girişi yapılmamış.")
+            return
+        }
+
+        val userWordsRef = databaseRef.child("Words").child(userId)
+        userWordsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val wordsList = mutableListOf<Words>()
+                for (wordSnapshot in snapshot.children) {
+                    val word = wordSnapshot.getValue(Words::class.java)
+                    if (word != null) {
+                        wordsList.add(word)
+                    }
+                }
+                onDataChange(wordsList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onError(error.message)
+            }
+        })
+    }
+
     fun idCounter(currentId: Int?): Int {
         return if (currentId == null) 0 else currentId + 1
     }
@@ -195,7 +221,16 @@ class WordsRepository {
             .addOnFailureListener { exception -> onError(exception.message ?: "Silme başarısız.") }
     }
 
-    fun updateWordInFirebase(wordId: String, newEngName: String, newTurName: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateWordInFirebase(
+        wordId: String,
+        newEngName: String,
+        newTurName: String,
+        newCategory: String? = null,
+        newPicturePath: String? = null,
+        newSamplesMap: Map<String, Any>? = null,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         val userId = auth.currentUser?.uid
         if (userId == null) {
             onError("Kullanıcı girişi yapılmamış.")
@@ -210,10 +245,20 @@ class WordsRepository {
 
         val wordRef = databaseRef.child("Words").child(userId).child(wordIdInt.toString())
 
-        val updates = mapOf(
+        val updates = mutableMapOf<String, Any>(
             "engWordName" to newEngName,
             "turWordName" to newTurName
         )
+        
+        if (newCategory != null) {
+            updates["category"] = newCategory
+        }
+        if (newPicturePath != null) {
+            updates["picture"] = newPicturePath
+        }
+        if (newSamplesMap != null) {
+            updates["samples"] = newSamplesMap
+        }
 
         wordRef.updateChildren(updates)
             .addOnSuccessListener { onSuccess() }
