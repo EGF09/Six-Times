@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -12,9 +13,12 @@ import com.example.a6times.ExamActivity
 import com.example.a6times.R
 import com.example.a6times.WordActivity
 import com.example.a6times.WordleActivity
+import com.example.a6times.data.WordsRepository
 import com.google.android.material.button.MaterialButton
 
 class HomeActivity : AppCompatActivity() {
+
+    private val wordsRepository = WordsRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +59,30 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        
+        // Update learning progress
+        val tvProgressPercent = findViewById<TextView>(R.id.tvProgressPercent)
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        
+        wordsRepository.getWordsOnce(
+            onDataChange = { wordsList ->
+                if (wordsList.isEmpty()) {
+                    tvProgressPercent.text = "%0 (0/0)"
+                    progressBar.progress = 0
+                } else {
+                    val totalWords = wordsList.size
+                    val learnedWords = wordsList.count { it.isLearned || it.progress >= 6 }
+                    val percent = if (totalWords > 0) ((learnedWords.toDouble() / totalWords) * 100).toInt() else 0
+                    
+                    tvProgressPercent.text = "%$percent ($learnedWords/$totalWords)"
+                    progressBar.progress = percent
+                }
+            },
+            onError = {
+                tvProgressPercent.text = "%0"
+                progressBar.progress = 0
+            }
+        )
         
         // Load the previous image state to show the previous visual on the Home screen
         val sharedPrefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
