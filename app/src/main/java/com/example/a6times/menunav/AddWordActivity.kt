@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
 import com.example.a6times.R
 import com.example.a6times.WordActivity
 import com.example.a6times.data.Words
@@ -26,15 +27,39 @@ class AddWordActivity : AppCompatActivity() {
     private var selectedImageUri: Uri? = null
     private var editWordId: String? = null
 
+    private fun copyImageToInternalStorage(uri: Uri): Uri? {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return null
+            val fileName = "word_image_${System.currentTimeMillis()}.jpg"
+            val file = java.io.File(filesDir, fileName)
+            val outputStream = java.io.FileOutputStream(file)
+            inputStream.copyTo(outputStream)
+            inputStream.close()
+            outputStream.close()
+            Uri.fromFile(file)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            selectedImageUri = uri
-            Toast.makeText(this, "Resim seçildi!", Toast.LENGTH_SHORT).show()
-            val ivSelectedImage = findViewById<ImageView>(R.id.ivSelectedImage)
-            ivSelectedImage.visibility = ImageView.VISIBLE
-            ivSelectedImage.setImageURI(selectedImageUri)
+            val copiedUri = copyImageToInternalStorage(uri)
+            if (copiedUri != null) {
+                selectedImageUri = copiedUri
+                Toast.makeText(this, "Resim seçildi!", Toast.LENGTH_SHORT).show()
+                val ivSelectedImage = findViewById<ImageView>(R.id.ivSelectedImage)
+                ivSelectedImage.visibility = ImageView.VISIBLE
+                ivSelectedImage.load(selectedImageUri) {
+                    crossfade(true)
+                    placeholder(android.R.color.transparent)
+                    error(android.R.color.transparent)
+                }
+            } else {
+                Toast.makeText(this, "Resim kopyalanamadı!", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(this, "Resim seçilmedi!", Toast.LENGTH_SHORT).show()
         }
@@ -67,7 +92,11 @@ class AddWordActivity : AppCompatActivity() {
                     if (word.picture.isNotEmpty()) {
                         selectedImageUri = Uri.parse(word.picture)
                         ivSelectedImage.visibility = ImageView.VISIBLE
-                        ivSelectedImage.setImageURI(selectedImageUri)
+                            ivSelectedImage.load(selectedImageUri) {
+                                crossfade(true)
+                                placeholder(android.R.color.transparent)
+                                error(android.R.color.transparent)
+                            }
                     }
 
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -115,10 +144,21 @@ class AddWordActivity : AppCompatActivity() {
             }
 
             if (editWordId != null) {
+                val samplesList = samplesInput.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
+                val samplesMap = mutableMapOf<String, Any>()
+                var startId = System.currentTimeMillis().toInt()
+                for ((index, sampleText) in samplesList.withIndex()) {
+                    val sid = startId + index
+                    samplesMap[sid.toString()] = mapOf("sampleID" to sid, "sample" to sampleText)
+                }
+
                 wordRepo.updateWordInFirebase(
                     wordId = editWordId!!,
                     newEngName = engWordInput,
                     newTurName = turWordInput,
+                    newCategory = categoryInput,
+                    newPicturePath = picturePath,
+                    newSamplesMap = samplesMap,
                     onSuccess = {
                         showSuccessDialog(etEngWord, etTurWord, etCategory, etSamples)
                     },
@@ -169,7 +209,7 @@ class AddWordActivity : AppCompatActivity() {
         } else {
             builder.setMessage("Kelime kaydedildi.")
             builder.setPositiveButton("Ana Sayfaya Dön") { _, _ ->
-                val intent = Intent(this, HomeActivity::class.java)
+                val intent = Intent(this, WordActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
                 finish()

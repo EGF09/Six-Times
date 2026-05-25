@@ -73,16 +73,32 @@ class WordleActivity : AppCompatActivity() {
     }
 
     private fun fetchDailyWord() {
-        wordsRepository.listenToWords(
+        wordsRepository.getWordsOnce(
             onDataChange = { wordsList ->
                 if (isGameInitialized) return@listenToWords
                 val learnedWords = wordsList.filter { it.isLearned || it.progress >= 6 }.sortedBy { it.wordID }
                 if (learnedWords.isEmpty()) return@listenToWords
+                if (isGameInitialized) return@getWordsOnce
+
+                val learnedWords = wordsList.filter { it.isLearned || it.progress >= 6 }
+                    .sortedBy { it.wordID }
+
+                if (learnedWords.isEmpty()) {
+                    Toast.makeText(this, "Henüz 6 aşamayı tamamlamış kelimeniz yok!", Toast.LENGTH_LONG).show()
+                    return@getWordsOnce
+                }
 
                 val epochDays = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
                 val todayWordIndex = (epochDays % learnedWords.size).toInt()
                 targetWord = learnedWords[todayWordIndex].engWordName.uppercase(Locale.ENGLISH).filter { it.isLetter() }
 
+                targetWord = selectedWord.uppercase(Locale.ENGLISH).filter { it.isLetter() }
+
+                if (targetWord.isEmpty()) {
+                    Toast.makeText(this, "Kelime formatı uygun değil.", Toast.LENGTH_SHORT).show()
+                    return@getWordsOnce
+                }
+                
                 isGameInitialized = true
                 cells = Array(maxTries) { arrayOfNulls<TextView>(targetWord.length) }
                 setupGrid()

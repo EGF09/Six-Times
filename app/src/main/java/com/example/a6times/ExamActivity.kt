@@ -5,11 +5,14 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
 import com.example.a6times.data.Words
 import com.example.a6times.data.WordsRepository
 import com.example.a6times.menunav.AnalysisActivity
@@ -61,6 +64,12 @@ class ExamActivity : AppCompatActivity() {
         btnFinishExam = findViewById(R.id.btnFinishExam)
 
         examProgressBar = findViewById(R.id.examProgressBar)
+        ivQuestionImage = findViewById(R.id.ivQuestionImage)
+        btnToggleImage = findViewById(R.id.btnToggleImage)
+        btnToggleHint = findViewById(R.id.btnToggleHint)
+        tvHintSentence = findViewById(R.id.tvHintSentence)
+
+        val btnFinishExam = findViewById<MaterialButton>(R.id.btnFinishExam)
 
         btnNextQuestion.isEnabled = false
 
@@ -71,6 +80,18 @@ class ExamActivity : AppCompatActivity() {
         btnNextQuestion.setOnClickListener {
             if (!isAnswerChecked) checkAnswer()
             else goToNextQuestion()
+        }
+
+        btnToggleImage.setOnClickListener {
+            isImageVisible = !isImageVisible
+            ivQuestionImage.visibility = if (isImageVisible) View.VISIBLE else View.GONE
+            btnToggleImage.text = if (isImageVisible) "Görseli Kapat" else "Görseli Aç"
+        }
+
+        btnToggleHint.setOnClickListener {
+            isHintVisible = !isHintVisible
+            tvHintSentence.visibility = if (isHintVisible) View.VISIBLE else View.GONE
+            btnToggleHint.text = if (isHintVisible) "İpucunu Kapat" else "İpucu Cümlesi"
         }
 
         val options = listOf(btnOption1, btnOption2, btnOption3)
@@ -85,7 +106,7 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun loadWords() {
-        wordsRepository.listenToWords(
+        wordsRepository.getWordsOnce(
             onDataChange = { words ->
                 if (allWords.isEmpty()) {
                     allWords = words
@@ -97,7 +118,7 @@ class ExamActivity : AppCompatActivity() {
                     if (allWords.size < 3) {
                         Toast.makeText(this, "Sınav için havuzda en az 3 kelime olmalı!", Toast.LENGTH_SHORT).show()
                         finish()
-                        return@listenToWords
+                        return@getWordsOnce
                     }
 
                     if (readyWords.size >= limit) {
@@ -140,6 +161,42 @@ class ExamActivity : AppCompatActivity() {
 
         examProgressBar.progress = currentQuestionIndex
 
+        // Reset toggles for the new question
+        isImageVisible = false
+        isHintVisible = false
+        ivQuestionImage.visibility = View.GONE
+        tvHintSentence.visibility = View.GONE
+        btnToggleImage.text = "Görseli Aç"
+        btnToggleHint.text = "İpucu Cümlesi"
+        tvHintSentence.text = ""
+
+        // Handle Image
+        btnToggleImage.visibility = View.VISIBLE
+        if (currentWord.picture.isNotEmpty()) {
+            ivQuestionImage.load(currentWord.picture) {
+                crossfade(true)
+                placeholder(android.R.color.transparent)
+                error(android.R.color.transparent)
+            }
+        } else {
+            // Load a default warning/question mark image if no picture is available
+            ivQuestionImage.load(android.R.drawable.ic_menu_help) {
+                crossfade(true)
+            }
+        }
+
+        // Handle Hint
+        btnToggleHint.visibility = View.GONE
+        wordsRepository.getWordSamples(currentWord.wordID) { samples ->
+            if (samples.isNotEmpty()) {
+                tvHintSentence.text = samples.joinToString("\n")
+                btnToggleHint.visibility = View.VISIBLE
+            }
+        }
+
+        val wrongAnswers = allWords.filter { it.wordID != currentWord.wordID }.shuffled().take(2).map { it.turWordName }
+        // Şıkların sayısı her zaman 3 olması için wrongAnswers listesi 2 adet olmalı (toplam en az 3 kelime olduğu için güvenli)
+        currentOptions = (wrongAnswers + currentWord.turWordName).shuffled()
         val wrong = allWords
             .filter { it.wordID != word.wordID }
             .shuffled()

@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.a6times.data.WordsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -116,7 +117,11 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
                             if (word.picture.isNotEmpty()) {
                                 selectedImageUri = Uri.parse(word.picture)
                                 ivDialogImage.visibility = View.VISIBLE
-                                ivDialogImage.setImageURI(selectedImageUri)
+                                ivDialogImage.load(selectedImageUri) {
+                                    crossfade(true)
+                                    placeholder(android.R.color.transparent)
+                                    error(android.R.color.transparent)
+                                }
                             }
 
                             val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -153,30 +158,23 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
                         val newPicturePath = selectedImageUri?.toString() ?: ""
 
                         if (newEng.isNotEmpty() && newTur.isNotEmpty() && newCategory.isNotEmpty() && newSamples.isNotEmpty()) {
+                            val samplesList = newSamples.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
+                            val samplesMap = mutableMapOf<String, Any>()
+
+                            var startId = System.currentTimeMillis().toInt()
+                            for ((index, sampleText) in samplesList.withIndex()) {
+                                val sid = startId + index
+                                samplesMap[sid.toString()] = mapOf("sampleID" to sid, "sample" to sampleText)
+                            }
+
                             wordsRepository.updateWordInFirebase(
                                 wordId = targetWord.id,
                                 newEngName = newEng,
                                 newTurName = newTur,
+                                newCategory = newCategory,
+                                newPicturePath = newPicturePath,
+                                newSamplesMap = samplesMap,
                                 onSuccess = {
-                                    val userId = FirebaseAuth.getInstance().currentUser?.uid
-                                    if (userId != null) {
-                                        val samplesList = newSamples.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
-                                        val samplesMap = mutableMapOf<String, Any>()
-
-                                        var startId = System.currentTimeMillis().toInt()
-                                        for ((index, sampleText) in samplesList.withIndex()) {
-                                            val sid = startId + index
-                                            samplesMap[sid.toString()] = mapOf("sampleID" to sid, "sample" to sampleText)
-                                        }
-
-                                        val wordRef = FirebaseDatabase.getInstance("https://six-times-228d1-default-rtdb.europe-west1.firebasedatabase.app")
-                                            .reference.child("Words").child(userId).child(targetWord.id)
-
-                                        wordRef.child("category").setValue(newCategory)
-                                        wordRef.child("samples").setValue(samplesMap)
-                                        wordRef.child("picture").setValue(newPicturePath)
-                                    }
-
                                     holder.tvWordText.text = "$newEng - $newTur"
                                     Toast.makeText(context, "Kelime başarıyla güncellendi!", Toast.LENGTH_SHORT).show()
                                 },
@@ -225,13 +223,39 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
 
     override fun getItemCount(): Int = wordList.size
 
+    private fun copyImageToInternalStorage(context: android.content.Context, uri: Uri): Uri? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val fileName = "word_image_${System.currentTimeMillis()}.jpg"
+            val file = java.io.File(context.filesDir, fileName)
+            val outputStream = java.io.FileOutputStream(file)
+            inputStream.copyTo(outputStream)
+            inputStream.close()
+            outputStream.close()
+            Uri.fromFile(file)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 999 && resultCode == Activity.RESULT_OK && data != null) {
             val uri = data.data
             if (uri != null) {
-                selectedImageUri = uri
-                currentDialogImageView?.visibility = View.VISIBLE
-                currentDialogImageView?.setImageURI(uri)
+                val context = currentDialogImageView?.context
+                if (context != null) {
+                    val copiedUri = copyImageToInternalStorage(context, uri)
+                    if (copiedUri != null) {
+                        selectedImageUri = copiedUri
+                        currentDialogImageView?.visibility = View.VISIBLE
+                        currentDialogImageView?.load(copiedUri) {
+                            crossfade(true)
+                        }
+                        Toast.makeText(context, "Resim başarıyla seçildi.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Resim kopyalanamadı!", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

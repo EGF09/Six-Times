@@ -1,16 +1,21 @@
 package com.example.a6times.loginnav
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.a6times.R
+import com.google.firebase.auth.FirebaseAuth
 
 class ForgotActivity : AppCompatActivity() {
+
+    private val auth = FirebaseAuth.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,22 +26,32 @@ class ForgotActivity : AppCompatActivity() {
             insets
         }
 
-        val approvePasswordButton = findViewById<Button>(R.id.ChangePasswordButton)
-        val ForgotBackButton = findViewById<ImageButton>(R.id.ForgotBackButton)
+        val etEmail = findViewById<EditText>(R.id.emailForgot)
+        val btnChangePassword = findViewById<Button>(R.id.ChangePasswordButton)
+        val btnBack = findViewById<ImageButton>(R.id.ForgotBackButton)
 
-        //region şifre onayla butonu
-        approvePasswordButton.setOnClickListener {
-            val approveIntent = Intent(this, com.example.a6times.loginnav
-                .ApprovePasswordActivity::class.java)
-            startActivity(approveIntent)
-            finish()// Ana sayfaya dön
-        }
-        //endregion
+        btnChangePassword.setOnClickListener {
+            val email = etEmail.text.toString().trim()
 
-        //region geri butonu
-        ForgotBackButton.setOnClickListener {
-            finish()// Ana sayfaya dön
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Lütfen kayıtlı e-posta adresinizi girin!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Firebase'in Güvenli Şifre Sıfırlama Email'ini Gönder
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Şifre sıfırlama bağlantısı e-postanıza gönderildi!", Toast.LENGTH_LONG).show()
+                        finish() // Return to login screen
+                    } else {
+                        Toast.makeText(this, "Hata: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
         }
-        //endregion
+
+        btnBack.setOnClickListener {
+            finish()
+        }
     }
 }

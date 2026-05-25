@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -20,6 +23,7 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -63,4 +67,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+
+    // AI Image Dependency
+    implementation("io.coil-kt:coil:2.6.0")
 }
