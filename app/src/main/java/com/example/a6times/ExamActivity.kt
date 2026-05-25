@@ -33,6 +33,14 @@ class ExamActivity : AppCompatActivity() {
     private lateinit var btnFinishExam: MaterialButton
 
     private lateinit var examProgressBar: ProgressBar
+    private lateinit var ivQuestionImage: ImageView
+    private lateinit var btnToggleImage: MaterialButton
+    private lateinit var btnToggleHint: MaterialButton
+    private lateinit var tvHintSentence: TextView
+
+    private var isImageVisible = false
+    private var isHintVisible = false
+    private lateinit var currentWord: Words
 
     private val wordsRepository = WordsRepository()
 
@@ -68,8 +76,6 @@ class ExamActivity : AppCompatActivity() {
         btnToggleImage = findViewById(R.id.btnToggleImage)
         btnToggleHint = findViewById(R.id.btnToggleHint)
         tvHintSentence = findViewById(R.id.tvHintSentence)
-
-        val btnFinishExam = findViewById<MaterialButton>(R.id.btnFinishExam)
 
         btnNextQuestion.isEnabled = false
 
@@ -154,9 +160,9 @@ class ExamActivity : AppCompatActivity() {
         btnNextQuestion.text = "Kontrol Et"
         btnNextQuestion.isEnabled = false
 
-        val word = examWords[currentQuestionIndex]
+        currentWord = examWords[currentQuestionIndex]
 
-        tvQuestionWord.text = word.engWordName
+        tvQuestionWord.text = currentWord.engWordName
         tvQuestionCount.text = "Soru: ${currentQuestionIndex + 1} / ${examWords.size}"
 
         examProgressBar.progress = currentQuestionIndex
@@ -194,16 +200,13 @@ class ExamActivity : AppCompatActivity() {
             }
         }
 
-        val wrongAnswers = allWords.filter { it.wordID != currentWord.wordID }.shuffled().take(2).map { it.turWordName }
-        // Şıkların sayısı her zaman 3 olması için wrongAnswers listesi 2 adet olmalı (toplam en az 3 kelime olduğu için güvenli)
-        currentOptions = (wrongAnswers + currentWord.turWordName).shuffled()
         val wrong = allWords
-            .filter { it.wordID != word.wordID }
+            .filter { it.wordID != currentWord.wordID }
             .shuffled()
             .take(2)
             .map { it.turWordName }
 
-        val optionsList = (wrong + word.turWordName).shuffled()
+        val optionsList = (wrong + currentWord.turWordName).shuffled()
         if (optionsList.size < 3) {
             Toast.makeText(this, "Yeterli seçenek oluşturulamadı.", Toast.LENGTH_SHORT).show()
             finish()
@@ -247,11 +250,10 @@ class ExamActivity : AppCompatActivity() {
         isAnswerChecked = true
         btnNextQuestion.text = "Sonraki"
 
-        val word = examWords[currentQuestionIndex]
         val buttons = listOf(btnOption1, btnOption2, btnOption3)
 
         val selected = currentOptions[selectedOptionIndex]
-        val correct = word.turWordName
+        val correct = currentWord.turWordName
 
         val correctIndex = currentOptions.indexOf(correct)
 
@@ -281,7 +283,7 @@ class ExamActivity : AppCompatActivity() {
             }
         }
 
-        wordsRepository.updateWordProgress(word, selected == correct)
+        wordsRepository.updateWordProgress(currentWord, selected == correct)
     }
 
     private fun goToNextQuestion() {

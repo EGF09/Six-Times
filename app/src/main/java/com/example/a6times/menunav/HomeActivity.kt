@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import coil.load
@@ -65,45 +64,6 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateStreakSystem()
-    }
-
-    private fun updateStreakSystem() {
-        val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-
-        val currentDay = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
-
-        val lastLoginDay = prefs.getLong("lastLoginDay", 0L)
-        var currentStreak = prefs.getInt("currentStreak", 0)
-
-        if (lastLoginDay == 0L) {
-            currentStreak = 1
-        } else {
-            val dayDifference = currentDay - lastLoginDay
-
-            when (dayDifference) {
-                1L -> {
-                    currentStreak++
-                }
-                0L -> {
-                    // Aynı gün, değişiklik yok
-                }
-                else -> {
-                    currentStreak = 1
-                }
-            }
-        }
-
-        prefs.edit().apply {
-            putLong("lastLoginDay", currentDay)
-            putInt("currentStreak", currentStreak)
-            apply()
-        }
-
-        tvStreakCount.text = currentStreak.toString()
-    }
-
-    override fun onResume() {
-        super.onResume()
 
         // Update learning progress
         val tvProgressPercent = findViewById<TextView>(R.id.tvProgressPercent)
@@ -142,5 +102,40 @@ class HomeActivity : AppCompatActivity() {
                 crossfade(true)
             }
         }
+    }
+
+    private fun updateStreakSystem() {
+        val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+
+        val currentDay = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
+
+        val lastLoginDay = prefs.getLong("lastLoginDay", 0L)
+        var currentStreak = prefs.getInt("currentStreak", 0)
+
+        if (lastLoginDay == 0L) {
+            currentStreak = 1
+        } else {
+            val dayDifference = currentDay - lastLoginDay
+
+            when (dayDifference) {
+                1L -> {
+                    currentStreak++
+                }
+                0L -> {
+                    // Aynı gün, değişiklik yok
+                }
+                else -> {
+                    currentStreak = 1
+                }
+            }
+        }
+
+        prefs.edit().apply {
+            putLong("lastLoginDay", currentDay)
+            putInt("currentStreak", currentStreak)
+            apply()
+        }
+
+        tvStreakCount.text = currentStreak.toString()
     }
 }

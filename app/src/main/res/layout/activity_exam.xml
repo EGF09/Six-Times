@@ -70,15 +70,6 @@
                 android:shadowDy="2"
                 android:shadowRadius="4" />
         </FrameLayout>
-            <TextView
-                android:id="@+id/tvQuestionWord"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Word"
-                android:textColor="#FFFFFF"
-                android:textSize="28sp"
-                android:textStyle="bold"/>
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -147,11 +138,10 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/questionCard"
+        app:layout_constraintTop_toBottomOf="@id/hintContainer"
         app:layout_constraintBottom_toTopOf="@id/btnNextQuestion"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-        app:layout_constraintTop_toBottomOf="@+id/hintContainer">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOption1"
