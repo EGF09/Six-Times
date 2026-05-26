@@ -1,6 +1,5 @@
 package com.example.a6times
 
-import android.content.Context
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -15,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.a6times.data.WordsRepository
 import com.example.a6times.databinding.ActivityWordleBinding
+import com.example.a6times.utils.Constants
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import nl.dionsegijn.konfetti.xml.KonfettiView
@@ -53,13 +53,13 @@ class WordleActivity : AppCompatActivity() {
             if (guess.length == targetWord.length) {
                 // Geçerlilik kontrolü
                 if (guess.toSet().size == 1 && guess.length > 1) {
-                    Toast.makeText(this, "Lütfen geçerli bir kelime giriniz!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.wordle_invalid_word), Toast.LENGTH_SHORT).show()
                 } else {
                     checkGuess(guess)
                     binding.etGuess.text.clear()
                 }
             } else {
-                Toast.makeText(this, "Kelime ${targetWord.length} harfli olmalı!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.wordle_length_error, targetWord.length), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -90,21 +90,21 @@ class WordleActivity : AppCompatActivity() {
                 if (isGameInitialized) return@getWordsOnce
 
                 // Sadece tam öğrenilmiş kelimeleri seç
-                val learnedWords = wordsList.filter { it.isLearned || it.progress >= 6 }
+                val learnedWords = wordsList.filter { it.isLearned || it.progress >= Constants.MAX_WORD_PROGRESS }
                     .sortedBy { it.wordID }
 
                 if (learnedWords.isEmpty()) {
-                    Toast.makeText(this, "Henüz 6 aşamayı tamamlamış kelimeniz yok!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.wordle_no_words_error), Toast.LENGTH_LONG).show()
                     return@getWordsOnce
                 }
 
                 // Günlük değişen bir indeks hesapla
-                val epochDays = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
+                val epochDays = System.currentTimeMillis() / Constants.ONE_DAY_MS
                 val todayWordIndex = (epochDays % learnedWords.size).toInt()
                 targetWord = learnedWords[todayWordIndex].engWordName.uppercase(Locale.ENGLISH).filter { it.isLetter() }
 
                 if (targetWord.isEmpty()) {
-                    Toast.makeText(this, "Kelime formatı uygun değil.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.wordle_invalid_format), Toast.LENGTH_SHORT).show()
                     return@getWordsOnce
                 }
                 
@@ -160,32 +160,40 @@ class WordleActivity : AppCompatActivity() {
             // Izgaradaki her bir hücreyi (TextView) oluştur
             for (row in 0 until maxTries) {
                 for (col in 0 until targetWord.length) {
-                    val textView = TextView(this)
-                    val colSpec = GridLayout.spec(col, GridLayout.CENTER, 1f)
-                    val rowSpec = GridLayout.spec(row, GridLayout.CENTER, 1f)
-                    val params = GridLayout.LayoutParams(rowSpec, colSpec)
-
-                    params.width = calculatedCellSize
-                    params.height = calculatedCellSize
-                    params.setMargins(marginSize, marginSize, marginSize, marginSize)
-
-                    textView.layoutParams = params
-                    textView.gravity = Gravity.CENTER
-                    textView.textSize = dynamicTextSize
-                    textView.setTypeface(null, android.graphics.Typeface.BOLD)
-                    textView.setTextColor(Color.WHITE)
-                    textView.includeFontPadding = false
-
-                    // Hücre arka planı
-                    val backgroundDrawable = ContextCompat.getDrawable(this, R.drawable.bg_word_cell)?.mutate()
-                    backgroundDrawable?.setTintList(null)
-                    textView.background = backgroundDrawable
-
+                    val textView = createCellView(row, col, calculatedCellSize, marginSize, dynamicTextSize)
                     binding.glWordleGrid.addView(textView)
                     cells[row][col] = textView
                 }
             }
         }
+    }
+
+    /**
+     * Tek bir Wordle hücresini oluşturur.
+     */
+    private fun createCellView(row: Int, col: Int, size: Int, margin: Int, textSizeF: Float): TextView {
+        val textView = TextView(this)
+        val colSpec = GridLayout.spec(col, GridLayout.CENTER, 1f)
+        val rowSpec = GridLayout.spec(row, GridLayout.CENTER, 1f)
+        val params = GridLayout.LayoutParams(rowSpec, colSpec)
+
+        params.width = size
+        params.height = size
+        params.setMargins(margin, margin, margin, margin)
+
+        textView.layoutParams = params
+        textView.gravity = Gravity.CENTER
+        textView.textSize = textSizeF
+        textView.setTypeface(null, android.graphics.Typeface.BOLD)
+        textView.setTextColor(Color.WHITE)
+        textView.includeFontPadding = false
+
+        // Hücre arka planı
+        val backgroundDrawable = ContextCompat.getDrawable(this, R.drawable.bg_word_cell)?.mutate()
+        backgroundDrawable?.setTintList(null)
+        textView.background = backgroundDrawable
+
+        return textView
     }
 
     /**
@@ -205,23 +213,23 @@ class WordleActivity : AppCompatActivity() {
             val textView = cells[currentRow][i]
             textView?.text = guess[i].toString()
 
-            val colorHex = when {
-                guess[i] == targetWord[i] -> "#FF007A" // Doğru harf, doğru yer
-                targetWord.contains(guess[i]) -> "#C9B458" // Doğru harf, yanlış yer
-                else -> "#3A3A3C" // Harf kelimede yok
+            val cellColor = when {
+                guess[i] == targetWord[i] -> ContextCompat.getColor(this, R.color.wordle_correct_exact)
+                targetWord.contains(guess[i]) -> ContextCompat.getColor(this, R.color.wordle_correct_wrong_place)
+                else -> ContextCompat.getColor(this, R.color.wordle_wrong)
             }
 
             // Harf döndürme animasyonu
             textView?.animate()
                 ?.rotationX(90f)
-                ?.setDuration(300)
-                ?.setStartDelay(i * 200L)
+                ?.setDuration(Constants.WORDLE_ANIMATION_DURATION)
+                ?.setStartDelay(i * Constants.WORDLE_ANIMATION_DELAY_MULTIPLIER)
                 ?.withStartAction { playFlipSound() }
                 ?.withEndAction {
-                    textView.background?.setTint(Color.parseColor(colorHex))
+                    textView.background?.setTint(cellColor)
                     textView.animate()
                         ?.rotationX(0f)
-                        ?.setDuration(300)
+                        ?.setDuration(Constants.WORDLE_ANIMATION_DURATION)
                         ?.start()
                 }
                 ?.start()
@@ -230,7 +238,7 @@ class WordleActivity : AppCompatActivity() {
         // Animasyon bitiminde oyun durumunu kontrol et
         binding.glWordleGrid.postDelayed({
             onGuessAnimationFinished(guess, currentRow)
-        }, (targetWord.length * 200L) + 600L)
+        }, (targetWord.length * Constants.WORDLE_ANIMATION_DELAY_MULTIPLIER) + Constants.WORDLE_END_DELAY)
     }
 
     /**
@@ -239,9 +247,9 @@ class WordleActivity : AppCompatActivity() {
     private fun onGuessAnimationFinished(guess: String, row: Int) {
         if (guess == targetWord) {
             showConfetti()
-            Toast.makeText(this, "Tebrikler!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.wordle_congrats), Toast.LENGTH_LONG).show()
         } else if (row == maxTries - 1) {
-            Toast.makeText(this, "Kelime: $targetWord", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.wordle_word_is, targetWord), Toast.LENGTH_LONG).show()
         } else {
             binding.btnSubmitGuess.isEnabled = true
             binding.etGuess.isEnabled = true

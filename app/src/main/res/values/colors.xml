@@ -3,4 +3,7 @@
     <!-- Temel Renkler -->
     <color name="black">#FF000000</color> <!-- Tam Siyah -->
     <color name="white">#FFFFFFFF</color> <!-- Tam Beyaz -->
+    <color name="wordle_correct_exact">#FF007A</color>
+    <color name="wordle_correct_wrong_place">#C9B458</color>
+    <color name="wordle_wrong">#3A3A3C</color>
 </resources>

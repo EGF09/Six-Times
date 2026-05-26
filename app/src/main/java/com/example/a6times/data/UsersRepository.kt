@@ -3,6 +3,7 @@ package com.example.a6times.data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
+import com.example.a6times.utils.toSHA256
 
 /**
  * Kullanıcı işlemlerini (kayıt, şifreleme vb.) yöneten depo sınıfı.
@@ -51,18 +52,6 @@ class UsersRepository : IUsersRepository{
         } catch (e: Exception) {
             null
         }
-    }
-    //endregion
-
-    //region SHA256 fonksiyonu
-    /**
-     * Verilen metni SHA-256 algoritması kullanarak şifreler.
-     * 
-     * @return Metnin onaltılık (hex) formatındaki hash değeri.
-     */
-    fun String.toSHA256(): String {
-        val bytes = java.security.MessageDigest.getInstance("SHA-256").digest(this.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }// Hexadecimal format
     }
     //endregion
 }

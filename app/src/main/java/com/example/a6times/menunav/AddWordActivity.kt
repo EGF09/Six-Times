@@ -106,10 +106,9 @@ class AddWordActivity : AppCompatActivity() {
                     // Örnek cümleleri Firebase'den çek
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                     if (userId != null) {
-                        FirebaseDatabase.getInstance("https://six-times-228d1-default-rtdb.europe-west1.firebasedatabase.app")
-                            .reference.child("Words").child(userId).child(editWordId!!).child("samples")
-                            .addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
+                    FirebaseDatabase.getInstance(com.example.a6times.utils.Constants.FIREBASE_DATABASE_URL)
+                    .reference.child("Words").child(userId).child(editWordId!!).child("samples")
+                    .addListenerForSingleValueEvent(object : ValueEventListener {                                override fun onDataChange(snapshot: DataSnapshot) {
                                     if (snapshot.exists()) {
                                         val samplesBuilder = StringBuilder()
                                         for (sampleSnapshot in snapshot.children) {

@@ -15,6 +15,7 @@ import com.example.a6times.R
 import com.example.a6times.WordleActivity
 import com.example.a6times.data.UsersRepository
 import com.example.a6times.data.WordsRepository
+import com.example.a6times.utils.Constants
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -35,9 +36,9 @@ class HomeActivity : AppCompatActivity() {
 
         // Hoş geldin ismi için dinamik atama
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        var userName = sharedPref.getString("UserName", "Misafir")
-        tvWelcome.text = "Hoş geldin $userName"
+        val sharedPref = getSharedPreferences(Constants.PREFS_USER, Context.MODE_PRIVATE)
+        var userName = sharedPref.getString(Constants.PREFS_KEY_USER_NAME, getString(R.string.guest_user)) ?: getString(R.string.guest_user)
+        tvWelcome.text = getString(R.string.welcome_message, userName)
 
         // Kullanıcı oturum açmışsa ismi her ihtimale karşı Firebase'den güncel olarak çek
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -46,8 +47,8 @@ class HomeActivity : AppCompatActivity() {
                 val user = userRepo.getUser(currentUser.uid)
                 if (user != null) {
                     userName = user.userName
-                    tvWelcome.text = "Hoş geldin $userName"
-                    sharedPref.edit().putString("UserName", userName).apply()
+                    tvWelcome.text = getString(R.string.welcome_message, userName)
+                    sharedPref.edit().putString(Constants.PREFS_KEY_USER_NAME, userName).apply()
                 }
             }
         }
@@ -92,9 +93,9 @@ class HomeActivity : AppCompatActivity() {
 
         // 1. İSİM GÜNCELLEME (Kayıt ekranından gelen ismi burada alıyoruz)
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        val userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userName = userPrefs.getString("UserName", "Misafir")
-        tvWelcome.text = "Hoş geldin $userName"
+        val userPrefs = getSharedPreferences(Constants.PREFS_USER, Context.MODE_PRIVATE)
+        val userName = userPrefs.getString(Constants.PREFS_KEY_USER_NAME, getString(R.string.guest_user)) ?: getString(R.string.guest_user)
+        tvWelcome.text = getString(R.string.welcome_message, userName)
 
         // 2. STREAK SİSTEMİ: Kullanıcının her gün giriş yapıp yapmadığını kontrol eder
         updateStreakSystem()
@@ -106,27 +107,27 @@ class HomeActivity : AppCompatActivity() {
         wordsRepository.getWordsOnce(
             onDataChange = { wordsList ->
                 if (wordsList.isEmpty()) {
-                    tvProgressPercent.text = "%0 (0/0)"
+                    tvProgressPercent.text = getString(R.string.progress_zero)
                     progressBar.progress = 0
                 } else {
                     val totalWords = wordsList.size
                     // Öğrenilmiş (progress >= 6) veya isLearned işaretli kelimeleri say
-                    val learnedWords = wordsList.count { it.isLearned || it.progress >= 6 }
+                    val learnedWords = wordsRepository.getLearnedWordsCount(wordsList)
                     val percent = if (totalWords > 0) ((learnedWords.toDouble() / totalWords) * 100).toInt() else 0
 
-                    tvProgressPercent.text = "%$percent ($learnedWords/$totalWords)"
+                    tvProgressPercent.text = getString(R.string.progress_format, percent, learnedWords, totalWords)
                     progressBar.progress = percent
                 }
             },
             onError = {
-                tvProgressPercent.text = "%0"
+                tvProgressPercent.text = getString(R.string.progress_zero)
                 progressBar.progress = 0
             }
         )
 
         // 4. HİKAYE RESMİ YÜKLEME: Son oluşturulan hikaye görselini yükler
-        val sharedPrefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
-        val lastImageUrl = sharedPrefs.getString("lastImageUrl", null)
+        val sharedPrefs = getSharedPreferences(Constants.PREFS_WORD_CHAIN, Context.MODE_PRIVATE)
+        val lastImageUrl = sharedPrefs.getString(Constants.PREFS_KEY_LAST_IMAGE, null)
 
         if (lastImageUrl != null) {
             val ivStoryPreview = findViewById<ImageView>(R.id.ivStoryPreview)
@@ -141,10 +142,10 @@ class HomeActivity : AppCompatActivity() {
      * Eğer kullanıcı üst üste günlerde giriş yaparsa seri artar, ara verirse 1'e döner.
      */
     private fun updateStreakSystem() {
-        val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        val currentDay = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
-        val lastLoginDay = prefs.getLong("lastLoginDay", 0L)
-        var currentStreak = prefs.getInt("currentStreak", 0)
+        val prefs = getSharedPreferences(Constants.PREFS_APP, Context.MODE_PRIVATE)
+        val currentDay = System.currentTimeMillis() / Constants.ONE_DAY_MS
+        val lastLoginDay = prefs.getLong(Constants.PREFS_KEY_LAST_LOGIN, 0L)
+        var currentStreak = prefs.getInt(Constants.PREFS_KEY_STREAK, 0)
 
         if (lastLoginDay == 0L) {
             // İlk giriş
@@ -160,8 +161,8 @@ class HomeActivity : AppCompatActivity() {
 
         // Yeni değerleri kaydet
         prefs.edit().apply {
-            putLong("lastLoginDay", currentDay)
-            putInt("currentStreak", currentStreak)
+            putLong(Constants.PREFS_KEY_LAST_LOGIN, currentDay)
+            putInt(Constants.PREFS_KEY_STREAK, currentStreak)
             apply()
         }
 

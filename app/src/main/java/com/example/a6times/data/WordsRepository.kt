@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
+import com.example.a6times.utils.Constants
 
 /**
  * Kelime verilerinin Firebase Realtime Database üzerinden yönetilmesini sağlayan depo sınıfı.
@@ -14,9 +15,7 @@ import com.google.firebase.database.ValueEventListener
  */
 class WordsRepository {
     private val auth = FirebaseAuth.getInstance()
-    private val databaseRef = FirebaseDatabase.getInstance(
-        "https://six-times-228d1-default-rtdb.europe-west1.firebasedatabase.app"
-    ).reference
+    private val databaseRef = FirebaseDatabase.getInstance(Constants.FIREBASE_DATABASE_URL).reference
 
     /**
      * Yeni bir kelimeyi ve ilişkili örnek cümleleri veritabanına ekler.
@@ -176,6 +175,16 @@ class WordsRepository {
     }
 
     /**
+     * Öğrenilmiş veya maksimum aşamayı tamamlamış kelimelerin sayısını hesaplar.
+     * 
+     * @param words Tüm kelimeler listesi.
+     * @return Öğrenilmiş kelime sayısı.
+     */
+    fun getLearnedWordsCount(words: List<Words>): Int {
+        return words.count { it.isLearned || it.progress >= Constants.MAX_WORD_PROGRESS }
+    }
+
+    /**
      * Sınav için hazır olan kelimeleri filtreler.
      * Henüz öğrenilmemiş ve tekrar zamanı gelmiş kelimeleri seçer.
      * 
@@ -237,20 +246,19 @@ class WordsRepository {
             word.isActive = false
 
             // İlerleme aşamasına göre bir sonraki tekrar süresini belirle
-            val oneDayMs = 86400000L
             when (word.progress) {
-                1 -> word.nextReviewAt = currentTime + oneDayMs
-                2 -> word.nextReviewAt = currentTime + 7L * oneDayMs
-                3 -> word.nextReviewAt = currentTime + 30L * oneDayMs
-                4 -> word.nextReviewAt = currentTime + 90L * oneDayMs
-                5 -> word.nextReviewAt = currentTime + 180L * oneDayMs
-                6 -> {
-                    word.nextReviewAt = currentTime + 365L * oneDayMs
+                1 -> word.nextReviewAt = currentTime + Constants.ONE_DAY_MS
+                2 -> word.nextReviewAt = currentTime + Constants.ONE_WEEK_MS
+                3 -> word.nextReviewAt = currentTime + Constants.ONE_MONTH_MS
+                4 -> word.nextReviewAt = currentTime + Constants.THREE_MONTHS_MS
+                5 -> word.nextReviewAt = currentTime + Constants.SIX_MONTHS_MS
+                Constants.MAX_WORD_PROGRESS -> {
+                    word.nextReviewAt = currentTime + Constants.ONE_YEAR_MS
                     word.isLearned = true
                 }
                 else -> {
-                    if (word.progress > 6) {
-                        word.progress = 6
+                    if (word.progress > Constants.MAX_WORD_PROGRESS) {
+                        word.progress = Constants.MAX_WORD_PROGRESS
                         word.isLearned = true
                     }
                 }
