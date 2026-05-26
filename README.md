@@ -2,7 +2,7 @@
 
 Six-Times, aralıklı tekrar (spaced-repetition) ve oyunlaştırma yöntemlerini kullanarak kullanıcıların kalıcı olarak yeni kelimeler öğrenmesini sağlayan, Android platformu için geliştirilmiş modern bir mobil uygulamadır.
 
-İsminden de anlaşılacağı üzere temel felsefesi: *Bir kelimeyi tam anlamıyla öğrenmek için onunla farklı bağlamlarda (okuma, dinleme, test, oyun) yeterince sık (örn. altı kez) karşılaşmak gerekir.*
+İsminden de anlaşılacağı üzere temel felsefesi: *Bir kelimeyi tam anlamıyla öğrenmek için onunla farklı bağlamlarda (okuma, dinleme, test, oyun) yeterince sık (örn. altı kez) karşılaşmak.*
 
 ## 📸 Ekran Görüntüleri
 <table table-layout="fixed" width="100%">
@@ -62,16 +62,6 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
 4.  **Projeyi Senkronize Edin ve Çalıştırın:**
     *   Gradle senkronizasyonunun bitmesini bekleyin.
     *   Bir emülatör veya fiziksel cihaz seçerek **Run (Çalıştır)** butonuna (Shift + F10) basın.
-
-## 🤝 Katkıda Bulunma
-
-Geliştirmelere, hata düzeltmelerine veya yeni özellik fikirlerine her zaman açığız! Katkıda bulunmak için:
-
-1. Bu depoyu fork'layın.
-2. Yeni bir feature branch oluşturun: \`git checkout -b ozellik/YeniOzellik\`
-3. Değişikliklerinizi commit edin: \`git commit -m 'Yeni özellik eklendi'\`
-4. Branch'inize push yapın: \`git push origin ozellik/YeniOzellik\`
-5. Bir **Pull Request** başlatın.
 
 ---
 *Developed with ❤️ for better learning.*
