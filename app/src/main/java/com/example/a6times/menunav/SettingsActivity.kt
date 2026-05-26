@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.a6times.R
 import com.example.a6times.loginnav.LoginActivity
+import com.example.a6times.utils.Constants
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Uygulama ayarlarının (Sınav limitleri, Çıkış yapma vb.) yönetildiği ekran.
@@ -25,8 +27,9 @@ class SettingsActivity : AppCompatActivity() {
         val etExamQuestionLimit = findViewById<EditText>(R.id.etExamQuestionLimit)
 
         // Mevcut ayarları SharedPreferences'tan oku
-        val sharedPref = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val currentLimit = sharedPref.getInt("ExamQuestionLimit", 10)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
+        val sharedPref = getSharedPreferences("${Constants.PREFS_SETTINGS}_$userId", Context.MODE_PRIVATE)
+        val currentLimit = sharedPref.getInt(Constants.PREFS_KEY_EXAM_LIMIT, 10)
         etExamQuestionLimit.setText(currentLimit.toString())
 
         // Klavyeyi kapatma yönetimi
@@ -56,7 +59,7 @@ class SettingsActivity : AppCompatActivity() {
                     }
 
                     // Yeni limiti kaydet
-                    sharedPref.edit().putInt("ExamQuestionLimit", finalValue).apply()
+                    sharedPref.edit().putInt(Constants.PREFS_KEY_EXAM_LIMIT, finalValue).apply()
                 }
             }
         }
@@ -67,6 +70,7 @@ class SettingsActivity : AppCompatActivity() {
 
         // Çıkış yap butonu
         btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
             val intent = Intent(this, LoginActivity::class.java)
             // Tüm aktivite yığınını temizle ve login ekranına dön
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

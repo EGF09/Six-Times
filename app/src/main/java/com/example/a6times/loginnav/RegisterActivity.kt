@@ -14,7 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.a6times.R
 import com.example.a6times.data.Users
 import com.example.a6times.data.UsersRepository
+import com.example.a6times.utils.Constants
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 /**
@@ -89,8 +91,11 @@ class RegisterActivity : AppCompatActivity() {
             val result = userRepo.saveUser(newUser)
             if (result) {
                 // Kayıt başarılıysa kullanıcı adını yerel tercihlere kaydet
-                val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                sharedPref.edit().putString("UserName", newUser.userName).apply()
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid != null) {
+                    val sharedPref = getSharedPreferences("${Constants.PREFS_USER}_$uid", Context.MODE_PRIVATE)
+                    sharedPref.edit().putString(Constants.PREFS_KEY_USER_NAME, newUser.userName).apply()
+                }
                 
                 // Kullanıcıya bilgi ver ve ekranı kapat
                 Toast.makeText(this@RegisterActivity, "Kayıt Başarılı!", Toast.LENGTH_SHORT).show()

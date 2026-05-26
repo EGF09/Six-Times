@@ -36,12 +36,14 @@ class HomeActivity : AppCompatActivity() {
 
         // Hoş geldin ismi için dinamik atama
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        val sharedPref = getSharedPreferences(Constants.PREFS_USER, Context.MODE_PRIVATE)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: "guest"
+        
+        val sharedPref = getSharedPreferences("${Constants.PREFS_USER}_$userId", Context.MODE_PRIVATE)
         var userName = sharedPref.getString(Constants.PREFS_KEY_USER_NAME, getString(R.string.guest_user)) ?: getString(R.string.guest_user)
         tvWelcome.text = getString(R.string.welcome_message, userName)
 
         // Kullanıcı oturum açmışsa ismi her ihtimale karşı Firebase'den güncel olarak çek
-        val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             lifecycleScope.launch {
                 val user = userRepo.getUser(currentUser.uid)
@@ -93,7 +95,8 @@ class HomeActivity : AppCompatActivity() {
 
         // 1. İSİM GÜNCELLEME (Kayıt ekranından gelen ismi burada alıyoruz)
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        val userPrefs = getSharedPreferences(Constants.PREFS_USER, Context.MODE_PRIVATE)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
+        val userPrefs = getSharedPreferences("${Constants.PREFS_USER}_$userId", Context.MODE_PRIVATE)
         val userName = userPrefs.getString(Constants.PREFS_KEY_USER_NAME, getString(R.string.guest_user)) ?: getString(R.string.guest_user)
         tvWelcome.text = getString(R.string.welcome_message, userName)
 
@@ -126,7 +129,7 @@ class HomeActivity : AppCompatActivity() {
         )
 
         // 4. HİKAYE RESMİ YÜKLEME: Son oluşturulan hikaye görselini yükler
-        val sharedPrefs = getSharedPreferences(Constants.PREFS_WORD_CHAIN, Context.MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences("${Constants.PREFS_WORD_CHAIN}_$userId", Context.MODE_PRIVATE)
         val lastImageUrl = sharedPrefs.getString(Constants.PREFS_KEY_LAST_IMAGE, null)
 
         if (lastImageUrl != null) {
@@ -142,7 +145,8 @@ class HomeActivity : AppCompatActivity() {
      * Eğer kullanıcı üst üste günlerde giriş yaparsa seri artar, ara verirse 1'e döner.
      */
     private fun updateStreakSystem() {
-        val prefs = getSharedPreferences(Constants.PREFS_APP, Context.MODE_PRIVATE)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
+        val prefs = getSharedPreferences("${Constants.PREFS_APP}_$userId", Context.MODE_PRIVATE)
         val currentDay = System.currentTimeMillis() / Constants.ONE_DAY_MS
         val lastLoginDay = prefs.getLong(Constants.PREFS_KEY_LAST_LOGIN, 0L)
         var currentStreak = prefs.getInt(Constants.PREFS_KEY_STREAK, 0)

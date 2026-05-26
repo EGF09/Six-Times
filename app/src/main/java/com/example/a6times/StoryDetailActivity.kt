@@ -16,9 +16,11 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.example.a6times.R
 import com.example.a6times.data.WordsRepository
+import com.example.a6times.utils.Constants
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -63,9 +65,10 @@ class StoryDetailActivity : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
 
         // Varsa daha önce kaydedilmiş hikayeyi yükle
-        val sharedPrefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
-        val lastImageUrl = sharedPrefs.getString("lastImageUrl", null)
-        val lastStoryText = sharedPrefs.getString("lastStoryText", null)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
+        val sharedPrefs = getSharedPreferences("${Constants.PREFS_WORD_CHAIN}_$userId", Context.MODE_PRIVATE)
+        val lastImageUrl = sharedPrefs.getString(Constants.PREFS_KEY_LAST_IMAGE, null)
+        val lastStoryText = sharedPrefs.getString(Constants.PREFS_KEY_LAST_STORY, null)
 
         if (lastImageUrl != null && lastStoryText != null) {
             tvStoryTitle.text = "Son Hikayeniz"
@@ -103,11 +106,11 @@ class StoryDetailActivity : AppCompatActivity() {
         // Hikayeyi kaydet butonu
         btnSave.setOnClickListener {
             if (generatedImageUrl != null && generatedStoryText != null) {
-                val prefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
+                val prefs = getSharedPreferences("${Constants.PREFS_WORD_CHAIN}_$userId", Context.MODE_PRIVATE)
                 prefs.edit()
                     .putBoolean("hasPreviousImage", true)
-                    .putString("lastImageUrl", generatedImageUrl)
-                    .putString("lastStoryText", generatedStoryText)
+                    .putString(Constants.PREFS_KEY_LAST_IMAGE, generatedImageUrl)
+                    .putString(Constants.PREFS_KEY_LAST_STORY, generatedStoryText)
                     .apply()
                 
                 Toast.makeText(this, "Hikaye ve görsel başarıyla kaydedildi!", Toast.LENGTH_SHORT).show()

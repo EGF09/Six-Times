@@ -18,8 +18,11 @@ object Constants {
     const val PREFS_APP = "AppPrefs"
     const val PREFS_KEY_LAST_LOGIN = "lastLoginDay"
     const val PREFS_KEY_STREAK = "currentStreak"
+    const val PREFS_SETTINGS = "AppSettings"
+    const val PREFS_KEY_EXAM_LIMIT = "ExamQuestionLimit"
     const val PREFS_WORD_CHAIN = "WordChainPrefs"
     const val PREFS_KEY_LAST_IMAGE = "lastImageUrl"
+    const val PREFS_KEY_LAST_STORY = "lastStoryText"
 
     // Wordle Constants
     const val WORDLE_ANIMATION_DURATION = 300L

@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.a6times.R
 import com.example.a6times.data.UsersRepository
 import com.example.a6times.menunav.HomeActivity
+import com.example.a6times.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -72,8 +73,8 @@ class LoginActivity: AppCompatActivity() {
                         lifecycleScope.launch {
                             val user = userRepo.getUser(uid)
                             if (user != null) {
-                                val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                                sharedPref.edit().putString("UserName", user.userName).apply()
+                                val sharedPref = getSharedPreferences("${Constants.PREFS_USER}_$uid", Context.MODE_PRIVATE)
+                                sharedPref.edit().putString(Constants.PREFS_KEY_USER_NAME, user.userName).apply()
                             }
                             // Giriş başarılıysa ana ekrana yönlendir
                             startActivity(Intent(this@LoginActivity, HomeActivity::class.java))

@@ -16,7 +16,9 @@ import coil.load
 import com.example.a6times.data.Words
 import com.example.a6times.data.WordsRepository
 import com.example.a6times.menunav.AnalysisActivity
+import com.example.a6times.utils.Constants
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Kelime sınavı uygulamasının temel mantığını yürüten ekran.
@@ -126,8 +128,9 @@ class ExamActivity : AppCompatActivity() {
                     allWords = words
                     val readyWords = wordsRepository.getExamReadyWords(words)
 
-                    val limit = getSharedPreferences("AppSettings", MODE_PRIVATE)
-                        .getInt("ExamQuestionLimit", 10)
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "guest"
+                    val limit = getSharedPreferences("${Constants.PREFS_SETTINGS}_$userId", MODE_PRIVATE)
+                        .getInt(Constants.PREFS_KEY_EXAM_LIMIT, 10)
 
                     if (allWords.size < 3) {
                         Toast.makeText(this, "Sınav için havuzda en az 3 kelime olmalı!", Toast.LENGTH_SHORT).show()
