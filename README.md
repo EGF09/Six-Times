@@ -5,12 +5,17 @@ Six-Times, aralıklı tekrar (spaced-repetition) ve oyunlaştırma yöntemlerini
 İsminden de anlaşılacağı üzere temel felsefesi: *Bir kelimeyi tam anlamıyla öğrenmek için onunla farklı bağlamlarda (okuma, dinleme, test, oyun) yeterince sık (örn. altı kez) karşılaşmak gerekir.*
 
 ## 📸 Ekran Görüntüleri
+<table table-layout="fixed" width="100%">
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/91dd8131-e7e4-4513-8926-a24aa114d986" width="100%" alt="img2" />
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/16d67cec-a1d1-4280-ab68-9d2517c71aff" width="100%" alt="img1" />
+    </td>
+  </tr>
+</table>
 
-<div align="center">
-  <img src="images/home_screen.jpg" alt="Ana Sayfa" width="300"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="images/story_mode.jpg" alt="Yapay Zeka Hikaye Modu" width="300"/>
-</div>
 
 ## 🌟 Öne Çıkan Özellikler
 
