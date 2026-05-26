@@ -30,6 +30,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 
+/**
+ * Yapay zeka kullanarak seçilen kelimelerden hikaye ve görsel oluşturan ekran.
+ */
 class StoryDetailActivity : AppCompatActivity() {
 
     private lateinit var chipGroupWords: ChipGroup
@@ -57,11 +60,9 @@ class StoryDetailActivity : AppCompatActivity() {
         ivFullStoryImage = findViewById(R.id.ivFullStoryImage)
         tvStoryTitle = findViewById(R.id.tvStoryTitle)
 
-        btnBack.setOnClickListener {
-            finish()
-        }
+        btnBack.setOnClickListener { finish() }
 
-        // Load previously saved story and image if they exist
+        // Varsa daha önce kaydedilmiş hikayeyi yükle
         val sharedPrefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
         val lastImageUrl = sharedPrefs.getString("lastImageUrl", null)
         val lastStoryText = sharedPrefs.getString("lastStoryText", null)
@@ -78,9 +79,10 @@ class StoryDetailActivity : AppCompatActivity() {
             tvStoryTitle.text = "Yeni Hikaye Oluştur"
         }
 
-        // Fetch words from repository
+        // Kullanıcı kelimelerini yükle
         loadUserWords()
 
+        // Hikaye oluşturma butonu
         btnGenerate.setOnClickListener {
             val selectedWords = mutableListOf<String>()
             for (i in 0 until chipGroupWords.childCount) {
@@ -98,6 +100,7 @@ class StoryDetailActivity : AppCompatActivity() {
             generateStoryAndImage(selectedWords)
         }
 
+        // Hikayeyi kaydet butonu
         btnSave.setOnClickListener {
             if (generatedImageUrl != null && generatedStoryText != null) {
                 val prefs = getSharedPreferences("WordChainPrefs", Context.MODE_PRIVATE)
@@ -115,16 +118,17 @@ class StoryDetailActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Kullanıcının kelimelerini çeker ve seçim için ChipGroup'a ekler.
+     */
     private fun loadUserWords() {
         wordsRepository.listenToWords(
             onDataChange = { wordsList ->
                 chipGroupWords.removeAllViews()
                 if (wordsList.isEmpty()) {
                     val emptyChip = Chip(this@StoryDetailActivity).apply {
-                        id = View.generateViewId()
                         text = "Henüz kelimeniz yok."
                         isCheckable = false
-                        isClickable = false
                         chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(this@StoryDetailActivity, android.R.color.darker_gray))
                         setTextColor(ContextCompat.getColor(this@StoryDetailActivity, android.R.color.white))
                     }
@@ -132,8 +136,7 @@ class StoryDetailActivity : AppCompatActivity() {
                 } else {
                     wordsList.forEach { word ->
                         val chip = Chip(this).apply {
-                            id = View.generateViewId()
-                            text = word.engWordName // or turWordName
+                            text = word.engWordName
                             isCheckable = true
                             isClickable = true
                             chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(this@StoryDetailActivity, android.R.color.black))
@@ -146,10 +149,8 @@ class StoryDetailActivity : AppCompatActivity() {
             onError = { error ->
                 chipGroupWords.removeAllViews()
                 val errorChip = Chip(this@StoryDetailActivity).apply {
-                    id = View.generateViewId()
                     text = "Kelimeler yüklenemedi."
                     isCheckable = false
-                    isClickable = false
                     chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(this@StoryDetailActivity, android.R.color.holo_red_dark))
                     setTextColor(ContextCompat.getColor(this@StoryDetailActivity, android.R.color.white))
                 }
@@ -158,9 +159,14 @@ class StoryDetailActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Seçilen kelimeleri kullanarak yapay zeka üzerinden hikaye ve görsel oluşturur.
+     * 
+     * @param words Hikayede kullanılacak kelime listesi.
+     */
     private fun generateStoryAndImage(words: List<String>) {
         lifecycleScope.launch {
-            // UI State: Loading
+            // Yükleme durumu UI güncellemeleri
             btnGenerate.isEnabled = false
             btnGenerate.text = "Eşzamanlı Olarak Oluşturuluyor..."
             progressBar.visibility = View.VISIBLE
@@ -169,7 +175,7 @@ class StoryDetailActivity : AppCompatActivity() {
 
             try {
                 coroutineScope {
-                    // 1. Generate Story in Turkish using keyless Pollinations Text API via POST
+                    // 1. Yapay Zeka ile Türkçe Hikaye Oluşturma (Pollinations Text API)
                     val storyDeferred = async(Dispatchers.IO) {
                         try {
                             val url = URL("https://text.pollinations.ai/")
@@ -182,7 +188,7 @@ class StoryDetailActivity : AppCompatActivity() {
                                 put("messages", JSONArray().apply {
                                     put(JSONObject().apply {
                                         put("role", "system")
-                                        put("content", "Sen yaratıcı bir Türkçe hikaye yazarısın. SADECE TEK BİR HİKAYE YAZACAKSIN. Kesinlikle madde imi (bullet point) kullanma, numaralandırma yapma, birden fazla seçenek sunma. Çıktıların SADECE düz metin (plain text) olmalıdır. KESİNLİKLE JSON formatında dönme, hiçbir ek açıklama veya başlık yazma.")
+                                        put("content", "Sen yaratıcı bir Türkçe hikaye yazarısın. SADECE TEK BİR HİKAYE YAZACAKSIN. Kesinlikle madde imi (bullet point) kullanma, numaralandırma yapma, birden fazla seçenek sunma. Çıktıların SADECE düz metin (plain text) olmalıdır.")
                                     })
                                     put(JSONObject().apply {
                                         put("role", "user")
@@ -200,13 +206,10 @@ class StoryDetailActivity : AppCompatActivity() {
 
                             val rawResponse = connection.inputStream.bufferedReader().readText()
                             
-                            // Pollinations occasionally returns a broken reasoning block or json instead of plain text.
-                            // We use regex/string parsing to forcefully extract just the story content if it does this.
+                            // Yanıtı temizle ve düz metne dönüştür
                             var cleanResponse = rawResponse
-                            
                             if (cleanResponse.contains("\"content\":")) {
                                 try {
-                                    // It returned JSON despite being told not to. Parse it out.
                                     val json = JSONObject(cleanResponse)
                                     if (json.has("content")) {
                                         cleanResponse = json.getString("content")
@@ -214,44 +217,20 @@ class StoryDetailActivity : AppCompatActivity() {
                                         cleanResponse = json.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
                                     }
                                 } catch (e: Exception) {
-                                    // If JSON parsing fails (broken JSON), use regex to find the content field
                                     val regex = "\"content\"\\s*:\\s*\"(.*?)\"".toRegex()
                                     val match = regex.find(cleanResponse)
-                                    if (match != null) {
-                                        cleanResponse = match.groupValues[1]
-                                    }
+                                    if (match != null) cleanResponse = match.groupValues[1]
                                 }
                             }
                             
-                            // Unescape common JSON artifacts if any survived
-                            cleanResponse = cleanResponse.replace("\\n", "\n").replace("\\\"", "\"").trim()
-                            
-                            // Remove Markdown bolding and headers just in case
-                            cleanResponse = cleanResponse.replace("**", "").replace("###", "")
-                            
-                            // If it STILL somehow includes the reasoning block, strip it manually
-                            if (cleanResponse.contains("reasoning")) {
-                                val split = cleanResponse.split("\"content\"")
-                                if (split.size > 1) {
-                                    val dirtyContent = split[1]
-                                    val regex = ":\\s*\"(.*?)\"".toRegex()
-                                    val match = regex.find(dirtyContent)
-                                    if (match != null) {
-                                        cleanResponse = match.groupValues[1].replace("\\n", "\n")
-                                    }
-                                }
-                            }
-
-                            cleanResponse
+                            cleanResponse.replace("\\n", "\n").replace("\\\"", "\"").trim()
                         } catch (e: Exception) {
                             "Hikaye oluşturulamadı: ${e.message}"
                         }
                     }
 
-                    // 2. Generate Image using keyless Pollinations Image API
+                    // 2. Yapay Zeka ile Görsel Oluşturma (Pollinations Image API)
                     val imagePromptDeferred = async(Dispatchers.IO) {
-                        // For image, we use the words directly + art styles. 
-                        // Added seed, dimensions, and nologo to force a fresh generation and bypass browser/coil cache
                         val promptText = "${words.joinToString(", ")}, epic fantasy, cinematic lighting, highly detailed, digital art"
                         val encodedPrompt = URLEncoder.encode(promptText, "UTF-8")
                         val randomSeed = System.currentTimeMillis()
@@ -261,17 +240,17 @@ class StoryDetailActivity : AppCompatActivity() {
                     generatedStoryText = storyDeferred.await()
                     generatedImageUrl = imagePromptDeferred.await()
                     
-                    // UI State: Success
+                    // Başarılı durum UI güncellemeleri
                     progressBar.visibility = View.GONE
                     btnGenerate.visibility = View.GONE
                     tvStoryTitle.text = "İşte Hikayeniz"
                     tvFullStoryText.text = generatedStoryText
                     btnSave.visibility = View.VISIBLE
                     
-                    // Load Image using Coil
+                    // Görseli yükle
                     ivFullStoryImage.load(generatedImageUrl) {
                         crossfade(true)
-                        placeholder(R.drawable.ic_launcher_background) // fallback placeholder
+                        placeholder(R.drawable.ic_launcher_background)
                         error(R.drawable.ic_launcher_background)
                     }
                 }
@@ -280,10 +259,7 @@ class StoryDetailActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
                 btnGenerate.isEnabled = true
                 btnGenerate.text = "Tekrar Dene"
-                
                 Toast.makeText(this@StoryDetailActivity, "Oluşturulamadı: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                tvStoryTitle.text = "Hata Oluştu"
-                tvFullStoryText.text = "Bağlantı sorunu yaşandı:\n\n${e.localizedMessage}"
             }
         }
     }

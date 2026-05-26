@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Kelime listesindeki her bir hücrenin arka planı -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Çok koyu gri dolgu -->
     <solid android:color="#121212" />
+    <!-- İnce gri kenarlık -->
     <stroke android:width="2dp" android:color="#3A3A3C" />
+    <!-- Küçük köşe yuvarlama -->
     <corners android:radius="4dp" />
 </shape>

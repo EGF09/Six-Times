@@ -16,10 +16,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.a6times.R
 import com.example.a6times.TopicProgressAdapter
 import com.example.a6times.WordAdapter
-import com.example.a6times.WordItem
+import com.example.a6times.data.WordItem
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * Kullanıcının kelime öğrenme istatistiklerini analiz eden ve raporlayan ekran.
+ * Kategori bazlı ilerleme gösterimi ve PDF raporu oluşturma özelliklerini içerir.
+ */
 class AnalysisActivity : AppCompatActivity() {
 
     private var currentTotalWords: Int = 0
@@ -35,6 +39,7 @@ class AnalysisActivity : AppCompatActivity() {
 
         val btnPrint = findViewById<ImageButton>(R.id.btnPrintReport)
         btnPrint.setOnClickListener {
+            // PDF raporu indirme onayı
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Raporu İndir")
             builder.setMessage("Analiz raporunuz PDF olarak kaydedilsin mi?")
@@ -48,6 +53,7 @@ class AnalysisActivity : AppCompatActivity() {
         val rvTopicProgress = findViewById<RecyclerView>(R.id.rvTopicProgress)
         rvTopicProgress.layoutManager = LinearLayoutManager(this)
 
+        // Verileri Firebase'den dinle ve istatistikleri güncelle
         val wordsRepository = com.example.a6times.data.WordsRepository()
         wordsRepository.listenToWords(
             onDataChange = { wordsList ->
@@ -59,6 +65,9 @@ class AnalysisActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Kelime listesine göre genel istatistikleri ve kategori bazlı ilerlemeyi günceller.
+     */
     private fun updateStatisticsAndProgress(
         words: List<com.example.a6times.data.Words>,
         tvTotal: TextView,
@@ -66,7 +75,7 @@ class AnalysisActivity : AppCompatActivity() {
         rvTopicProgress: RecyclerView
     ) {
         currentTotalWords = words.size
-        // İlerleme kaydedilmiş (progress > 0) kelimeleri doğru bilinmiş olarak varsayıyoruz
+        // İlerleme kaydedilmiş (progress > 0) kelimeleri doğru bilinmiş/öğrenilmeye başlanmış kabul et
         val correctWords = words.count { it.progress > 0 }
 
         currentOverallAccuracy = if (currentTotalWords > 0) {
@@ -78,10 +87,14 @@ class AnalysisActivity : AppCompatActivity() {
         tvTotal.text = "Toplam Kelime\n$currentTotalWords"
         tvRate.text = "Başarı Oranı\n%$currentOverallAccuracy"
 
+        // Kategori bazlı ilerlemeyi hesapla ve listele
         currentProgressList = calculateTopicProgress(words)
         rvTopicProgress.adapter = TopicProgressAdapter(currentProgressList)
     }
 
+    /**
+     * Kelimeleri kategorilerine göre gruplayarak her kategorinin başarı yüzdesini hesaplar.
+     */
     private fun calculateTopicProgress(words: List<com.example.a6times.data.Words>): List<com.example.a6times.data.TopicProgress> {
         val groupedByCategory = words.groupBy { it.category }
         val progressList = mutableListOf<com.example.a6times.data.TopicProgress>()
@@ -110,18 +123,23 @@ class AnalysisActivity : AppCompatActivity() {
         return progressList.sortedByDescending { it.progressPercentage }
     }
 
+    /**
+     * Analiz sonuçlarını içeren bir PDF dokümanı oluşturur ve cihazın dahili depolamasına kaydeder.
+     */
     private fun raporuPdfOlarakKaydet() {
         val pdfDocument = PdfDocument()
-        // A4 Boyutu: 595 x 842
+        // A4 Boyutu: 595 x 842 piksel
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
         val paint = Paint()
 
+        // Başlık
         paint.textSize = 20f
         paint.isFakeBoldText = true
         canvas.drawText("6times Başarı Analiz Raporu", 50f, 80f, paint)
 
+        // Genel Bilgiler
         paint.textSize = 14f
         paint.isFakeBoldText = true
         canvas.drawText("Genel İstatistikler", 50f, 130f, paint)
@@ -130,6 +148,7 @@ class AnalysisActivity : AppCompatActivity() {
         canvas.drawText("Toplam Öğrenilen Kelime: $currentTotalWords", 50f, 160f, paint)
         canvas.drawText("Genel Başarı Oranı: %$currentOverallAccuracy", 50f, 185f, paint)
 
+        // Kategori Detayları
         paint.isFakeBoldText = true
         canvas.drawText("Kategori Bazlı İlerleme", 50f, 235f, paint)
 
@@ -141,6 +160,7 @@ class AnalysisActivity : AppCompatActivity() {
             currentY += 25f
         }
 
+        // Alt Bilgi
         currentY += 30f
         paint.textSize = 10f
         paint.color = android.graphics.Color.GRAY
@@ -148,6 +168,7 @@ class AnalysisActivity : AppCompatActivity() {
 
         pdfDocument.finishPage(page)
 
+        // Dosyayı oluştur ve kaydet
         val dosyaAdi = "6times_Analiz_${System.currentTimeMillis()}.pdf"
         val dosyaYolu = File(getExternalFilesDir(null), dosyaAdi)
 
@@ -162,6 +183,9 @@ class AnalysisActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Oluşturulan PDF dosyasını uygun bir uygulama ile açar.
+     */
     private fun openPDF(file: File) {
         val uri: Uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
         val intent = Intent(Intent.ACTION_VIEW)

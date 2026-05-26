@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Neon dolgulu ve çift katmanlı çerçeve tasarımı -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dış katman (Neon Pembe) -->
     <item>
         <shape android:shape="rectangle">
             <solid android:color="#FF007A" />
@@ -7,9 +9,11 @@
         </shape>
     </item>
 
+    <!-- İç katman (Daha koyu pembe tonu, çerçeve efekti yaratır) -->
     <item android:top="2dp" android:bottom="2dp" android:left="2dp" android:right="2dp">
         <shape android:shape="rectangle">
-            <solid android:color="#CC3366" /> <corners android:radius="23dp" />
+            <solid android:color="#CC3366" /> 
+            <corners android:radius="23dp" />
         </shape>
     </item>
 </layer-list>

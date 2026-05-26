@@ -8,9 +8,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a6times.data.TopicProgress
 
+/**
+ * Konu bazlı öğrenme ilerlemesini listeleyen RecyclerView adaptörü.
+ * 
+ * @property progressList Gösterilecek konu ilerleme verilerinin listesi.
+ */
 class TopicProgressAdapter(private val progressList: List<TopicProgress>) :
     RecyclerView.Adapter<TopicProgressAdapter.ProgressViewHolder>() {
 
+    /**
+     * Her bir konu ilerleme öğesinin görünüm bileşenlerini tutan ViewHolder sınıfı.
+     */
     class ProgressViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTopicName: TextView = view.findViewById(R.id.tvTopicName)
         val tvProgressText: TextView = view.findViewById(R.id.tvProgressText)
@@ -26,9 +34,11 @@ class TopicProgressAdapter(private val progressList: List<TopicProgress>) :
     override fun onBindViewHolder(holder: ProgressViewHolder, position: Int) {
         val item = progressList[position]
         
+        // Verileri görünüm bileşenlerine bağla
         holder.tvTopicName.text = item.topic
         holder.tvProgressText.text = "${item.correctCount}/${item.totalCount} (%${item.progressPercentage})"
         
+        // İlerleme çubuğunu güncelle
         holder.progressBarTopic.progress = item.progressPercentage
     }
 

@@ -7,9 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a6times.R
-import com.example.a6times.WordItem
+import com.example.a6times.data.WordItem
 import com.example.a6times.data.WordsRepository
 
+/**
+ * Kelimeleri listeleyen ve düzenleme moduna geçilmesini sağlayan ekran.
+ * EditWordAdapter kullanarak kelimelerin hızlıca düzenlenmesine imkan tanır.
+ */
 class EditWordActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var editAdapter: EditWordAdapter
@@ -30,9 +34,13 @@ class EditWordActivity : AppCompatActivity() {
         editAdapter = EditWordAdapter(wordList)
         recyclerView.adapter = editAdapter
 
+        // Kelimeleri Firebase'den çek
         fetchWordsForEditing()
     }
 
+    /**
+     * Veritabanındaki kelimeleri dinamik olarak dinler ve listeyi günceller.
+     */
     private fun fetchWordsForEditing() {
         wordsRepository.listenToWords(
             onDataChange = { words ->

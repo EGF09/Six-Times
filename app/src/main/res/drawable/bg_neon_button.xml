@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Neon temalı ana buton arka planı -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Buton iç rengi (Turkuaz) -->
     <solid android:color="#00D8F0" />
 
+    <!-- Parlak neon turkuaz kenarlık -->
     <stroke
         android:width="3dp"
         android:color="#00F0FF" />
 
+    <!-- Yuvarlatılmış köşeler -->
     <corners android:radius="25dp" />
 </shape>

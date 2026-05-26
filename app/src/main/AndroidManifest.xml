@@ -74,7 +74,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".WordActivity"
+            android:name=".menunav.WordActivity"
             android:exported="false" />
 
         <activity

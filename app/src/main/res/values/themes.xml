@@ -1,13 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Uygulamanın Temel Teması (Gündüz/Gece uyumlu, NoActionBar ile üst bar gizli) -->
     <style name="Base.Theme._6Times" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#00F0FF</item>
-        <item name="colorSecondary">#FF007A</item>
-        <item name="android:windowBackground">#08080C</item>
+        <!-- Ana Renk Paleti (Neon Temalı) -->
+        <item name="colorPrimary">#00F0FF</item> <!-- Neon Turkuaz -->
+        <item name="colorSecondary">#FF007A</item> <!-- Neon Pembe -->
+        <item name="android:windowBackground">#08080C</item> <!-- Koyu Arkaplan -->
 
-        <item name="android:statusBarColor">#08080C</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <!-- Durum Çubuğu (StatusBar) Ayarları -->
+        <item name="android:statusBarColor">#08080C</item> <!-- Durum çubuğu rengi arkaplan ile uyumlu -->
+        <item name="android:windowLightStatusBar">false</item> <!-- Durum çubuğu simgeleri açık renk olsun -->
     </style>
 
+    <!-- Uygulama tarafından kullanılan ana tema referansı -->
     <style name="Theme._6Times" parent="Base.Theme._6Times" />
 </resources>

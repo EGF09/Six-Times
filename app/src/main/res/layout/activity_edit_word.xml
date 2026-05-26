@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Kelime Düzenleme Listesi Ekranı Layout Dosyası -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,6 +8,7 @@
     android:background="#08080C"
     android:padding="16dp">
 
+    <!-- Üst Bölüm: Geri Butonu -->
     <ImageButton
         android:id="@+id/btnEditWordsBack"
         android:layout_width="44dp"
@@ -18,6 +20,7 @@
         app:tint="#00F0FF"
         android:contentDescription="Geri Dön" />
 
+    <!-- Başlık -->
     <TextView
         android:id="@+id/tvEditTitle"
         android:layout_width="wrap_content"
@@ -30,6 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnEditWordsBack" />
 
+    <!-- Ana İçerik: Düzenlenebilir Kelime Listesi -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEditWords"
         android:layout_width="0dp"

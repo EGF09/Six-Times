@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Özel tasarım ilerleme çubuğu (ProgressBar) -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Arka Plan -->
+    <!-- Boş ilerleme çubuğu (Arka Plan) -->
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="10dp" />
             <solid android:color="#333333" />
         </shape>
     </item>
-    <!-- İlerleme Rengi -->
+    <!-- Dolu ilerleme çubuğu (İlerleme Rengi) -->
     <item android:id="@android:id/progress">
         <clip>
             <shape>
                 <corners android:radius="10dp" />
-                <solid android:color="#6750a4" /> <!-- Mor renk tonun -->
+                <solid android:color="#6750a4" /> <!-- Mor tonu -->
             </shape>
         </clip>
     </item>

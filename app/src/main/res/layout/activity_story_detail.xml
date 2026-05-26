@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Hikaye Detay ve Oluşturma Ekranı Layout Dosyası -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#08080C">
 
+    <!-- Üst Katman: Geri Butonu -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="44dp"
@@ -29,6 +31,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Hikaye Görseli -->
             <ImageView
                 android:id="@+id/ivFullStoryImage"
                 android:layout_width="match_parent"
@@ -36,6 +39,7 @@
                 android:scaleType="centerCrop"
                 android:src="@android:drawable/ic_menu_gallery" />
 
+            <!-- Hikaye İçerik Kartı -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,6 +54,7 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
+                    <!-- Başlık ve Talimatlar -->
                     <TextView
                         android:id="@+id/tvStoryTitle"
                         android:layout_width="wrap_content"
@@ -68,15 +73,16 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="12dp"/>
 
+                    <!-- Dinamik Kelime Seçim Alanı -->
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/chipGroupWords"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         app:singleSelection="false">
-                        <!-- Chips will be added dynamically -->
                     </com.google.android.material.chip.ChipGroup>
 
+                    <!-- Oluşturma Butonu -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGenerate"
                         android:layout_width="match_parent"
@@ -89,6 +95,7 @@
                         app:cornerRadius="12dp"
                         android:layout_marginBottom="24dp"/>
 
+                    <!-- Yükleme Göstergesi -->
                     <ProgressBar
                         android:id="@+id/progressBar"
                         android:layout_width="wrap_content"
@@ -97,6 +104,7 @@
                         android:visibility="gone"
                         android:layout_marginBottom="16dp"/>
 
+                    <!-- Oluşturulan Hikaye Metni -->
                     <TextView
                         android:id="@+id/tvFullStoryText"
                         android:layout_width="match_parent"
@@ -107,6 +115,7 @@
                         android:lineSpacingExtra="6dp"
                         android:layout_marginBottom="24dp"/>
 
+                    <!-- Kaydetme Butonu -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSave"
                         android:layout_width="match_parent"

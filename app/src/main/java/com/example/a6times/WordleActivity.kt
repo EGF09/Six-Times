@@ -21,6 +21,10 @@ import nl.dionsegijn.konfetti.xml.KonfettiView
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+/**
+ * Kelime tahmin oyunu (Wordle) ekranı.
+ * Kullanıcının öğrendiği kelimeler arasından seçilen günün kelimesini tahmin etmesini sağlar.
+ */
 class WordleActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWordleBinding
@@ -37,14 +41,17 @@ class WordleActivity : AppCompatActivity() {
         binding = ActivityWordleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Başlangıçta giriş alanlarını pasif yap
         binding.etGuess.isEnabled = false
         binding.btnSubmitGuess.isEnabled = false
 
         binding.WordBackButton.setOnClickListener { finish() }
 
+        // Tahmin gönder butonu işlevi
         binding.btnSubmitGuess.setOnClickListener {
             val guess = binding.etGuess.text.toString().uppercase(Locale.ENGLISH)
             if (guess.length == targetWord.length) {
+                // Geçerlilik kontrolü
                 if (guess.toSet().size == 1 && guess.length > 1) {
                     Toast.makeText(this, "Lütfen geçerli bir kelime giriniz!", Toast.LENGTH_SHORT).show()
                 } else {
@@ -56,6 +63,7 @@ class WordleActivity : AppCompatActivity() {
             }
         }
 
+        // Giriş alanına sadece harf girilmesini sağla
         binding.etGuess.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -69,14 +77,19 @@ class WordleActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        // Günün kelimesini veritabanından getir
         fetchDailyWord()
     }
 
+    /**
+     * Kullanıcının öğrendiği kelimeler arasından günün kelimesini belirler.
+     */
     private fun fetchDailyWord() {
         wordsRepository.getWordsOnce(
             onDataChange = { wordsList ->
                 if (isGameInitialized) return@getWordsOnce
 
+                // Sadece tam öğrenilmiş kelimeleri seç
                 val learnedWords = wordsList.filter { it.isLearned || it.progress >= 6 }
                     .sortedBy { it.wordID }
 
@@ -85,6 +98,7 @@ class WordleActivity : AppCompatActivity() {
                     return@getWordsOnce
                 }
 
+                // Günlük değişen bir indeks hesapla
                 val epochDays = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
                 val todayWordIndex = (epochDays % learnedWords.size).toInt()
                 targetWord = learnedWords[todayWordIndex].engWordName.uppercase(Locale.ENGLISH).filter { it.isLetter() }
@@ -94,6 +108,7 @@ class WordleActivity : AppCompatActivity() {
                     return@getWordsOnce
                 }
                 
+                // Oyun alanını hazırla
                 isGameInitialized = true
                 cells = Array(maxTries) { arrayOfNulls<TextView>(targetWord.length) }
                 setupGrid()
@@ -105,123 +120,79 @@ class WordleActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Tahminlerin görüntüleneceği ızgara (grid) yapısını dinamik olarak oluşturur.
+     */
     private fun setupGrid() {
-
         binding.glWordleGrid.removeAllViews()
-
         binding.glWordleGrid.columnCount = targetWord.length
         binding.glWordleGrid.rowCount = maxTries
 
         binding.glWordleGrid.post {
-
             val marginSize = 8
             val displayMetrics = resources.displayMetrics
 
-            val containerWidth =
-                binding.hsvWordle.width.takeIf { it > 0 }
-                    ?: displayMetrics.widthPixels
+            // Konteynır boyutlarını al
+            val containerWidth = binding.hsvWordle.width.takeIf { it > 0 } ?: displayMetrics.widthPixels
+            val containerHeight = binding.hsvWordle.height.takeIf { it > 0 } ?: (displayMetrics.heightPixels * 0.5).toInt()
 
-            val containerHeight =
-                binding.hsvWordle.height.takeIf { it > 0 }
-                    ?: (displayMetrics.heightPixels * 0.5).toInt()
-
-            val widthToUse =
-                containerWidth - (32 * displayMetrics.density).toInt()
-
+            val widthToUse = containerWidth - (32 * displayMetrics.density).toInt()
             val heightToUse = containerHeight
 
-            var cellWidth =
-                (widthToUse / targetWord.length) - (marginSize * 2)
+            // Hücre boyutlarını hesapla
+            var cellWidth = (widthToUse / targetWord.length) - (marginSize * 2)
+            val cellHeight = (heightToUse / maxTries) - (marginSize * 2)
 
-            val cellHeight =
-                (heightToUse / maxTries) - (marginSize * 2)
+            val minCellSize = (45 * displayMetrics.density).toInt()
+            val maxCellSize = (70 * displayMetrics.density).toInt()
 
-            val minCellSize =
-                (45 * displayMetrics.density).toInt()
+            var calculatedCellSize = minOf(cellWidth, cellHeight)
+            if (calculatedCellSize < minCellSize) calculatedCellSize = minCellSize
+            if (calculatedCellSize > maxCellSize) calculatedCellSize = maxCellSize
 
-            val maxCellSize =
-                (70 * displayMetrics.density).toInt()
-
-            var calculatedCellSize =
-                minOf(cellWidth, cellHeight)
-
-            if (calculatedCellSize < minCellSize) {
-                calculatedCellSize = minCellSize
-            }
-
-            if (calculatedCellSize > maxCellSize) {
-                calculatedCellSize = maxCellSize
-            }
-
-            // --- DEĞİŞİKLİK 1: GridLayout'ın kendisini ekranda ortalıyoruz ---
             val gridParams = binding.glWordleGrid.layoutParams
             gridParams.width = GridLayout.LayoutParams.WRAP_CONTENT
             binding.glWordleGrid.layoutParams = gridParams
 
-            binding.glWordleGrid.alignmentMode =
-                GridLayout.ALIGN_BOUNDS
+            binding.glWordleGrid.alignmentMode = GridLayout.ALIGN_BOUNDS
+            val dynamicTextSize = (calculatedCellSize / displayMetrics.density) * 0.4f
 
-            val dynamicTextSize =
-                (calculatedCellSize / displayMetrics.density) * 0.4f
-
+            // Izgaradaki her bir hücreyi (TextView) oluştur
             for (row in 0 until maxTries) {
-
                 for (col in 0 until targetWord.length) {
-
                     val textView = TextView(this)
-
-                    // --- DEĞİŞİKLİK 2: columnSpec ve rowSpec'e weight (1f) ekliyoruz ---
-                    // spec(index, alignment, weight) yapısı hücrelerin kaymasını önler ve eşit dağıtır.
                     val colSpec = GridLayout.spec(col, GridLayout.CENTER, 1f)
                     val rowSpec = GridLayout.spec(row, GridLayout.CENTER, 1f)
-
                     val params = GridLayout.LayoutParams(rowSpec, colSpec)
 
                     params.width = calculatedCellSize
                     params.height = calculatedCellSize
-
-                    params.setMargins(
-                        marginSize,
-                        marginSize,
-                        marginSize,
-                        marginSize
-                    )
+                    params.setMargins(marginSize, marginSize, marginSize, marginSize)
 
                     textView.layoutParams = params
-
                     textView.gravity = Gravity.CENTER
-
                     textView.textSize = dynamicTextSize
-
-                    textView.setTypeface(
-                        null,
-                        android.graphics.Typeface.BOLD
-                    )
-
+                    textView.setTypeface(null, android.graphics.Typeface.BOLD)
                     textView.setTextColor(Color.WHITE)
-
-                    textView.setPadding(0, 0, 0, 0)
-
                     textView.includeFontPadding = false
 
-                    val backgroundDrawable =
-                        ContextCompat.getDrawable(
-                            this,
-                            R.drawable.bg_word_cell
-                        )?.mutate()
-
+                    // Hücre arka planı
+                    val backgroundDrawable = ContextCompat.getDrawable(this, R.drawable.bg_word_cell)?.mutate()
                     backgroundDrawable?.setTintList(null)
-
                     textView.background = backgroundDrawable
 
                     binding.glWordleGrid.addView(textView)
-
                     cells[row][col] = textView
                 }
             }
         }
     }
 
+    /**
+     * Kullanıcının tahminini kontrol eder ve renklerle geri bildirim verir.
+     * 
+     * @param guess Kullanıcının girdiği tahmin kelimesi.
+     */
     private fun checkGuess(guess: String) {
         if (currentTry >= maxTries) return
 
@@ -229,27 +200,25 @@ class WordleActivity : AppCompatActivity() {
         binding.etGuess.isEnabled = false
         val currentRow = currentTry++
 
+        // Her bir harf için doğruluk kontrolü ve animasyon
         for (i in 0 until targetWord.length) {
             val textView = cells[currentRow][i]
             textView?.text = guess[i].toString()
 
             val colorHex = when {
-                guess[i] == targetWord[i] -> "#FF007A" // Doğru yer
-                targetWord.contains(guess[i]) -> "#C9B458" // Yanlış yer
-                else -> "#3A3A3C" // Yok
+                guess[i] == targetWord[i] -> "#FF007A" // Doğru harf, doğru yer
+                targetWord.contains(guess[i]) -> "#C9B458" // Doğru harf, yanlış yer
+                else -> "#3A3A3C" // Harf kelimede yok
             }
 
-            // Animasyon bloğu
+            // Harf döndürme animasyonu
             textView?.animate()
                 ?.rotationX(90f)
                 ?.setDuration(300)
-                ?.setStartDelay(i * 200L) // Sıralı tetikleme (Burada zaten delay var)
-                ?.withStartAction {
-                    playFlipSound()
-                }
+                ?.setStartDelay(i * 200L)
+                ?.withStartAction { playFlipSound() }
                 ?.withEndAction {
                     textView.background?.setTint(Color.parseColor(colorHex))
-
                     textView.animate()
                         ?.rotationX(0f)
                         ?.setDuration(300)
@@ -258,12 +227,15 @@ class WordleActivity : AppCompatActivity() {
                 ?.start()
         }
 
-        // Animasyonların toplam süresi kadar bekle ve oyunu devam ettir
+        // Animasyon bitiminde oyun durumunu kontrol et
         binding.glWordleGrid.postDelayed({
             onGuessAnimationFinished(guess, currentRow)
         }, (targetWord.length * 200L) + 600L)
     }
 
+    /**
+     * Tahmin animasyonu bittiğinde kazanma/kaybetme durumunu kontrol eder.
+     */
     private fun onGuessAnimationFinished(guess: String, row: Int) {
         if (guess == targetWord) {
             showConfetti()
@@ -276,12 +248,18 @@ class WordleActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Başarı durumunda konfeti efekti gösterir.
+     */
     private fun showConfetti() {
         findViewById<KonfettiView>(R.id.konfettiView).start(
             Party(spread = 360, colors = listOf(Color.YELLOW, Color.MAGENTA, Color.CYAN), emitter = Emitter(duration = 2, TimeUnit.SECONDS).perSecond(150))
         )
     }
 
+    /**
+     * Harf açılma sesini çalar.
+     */
     private fun playFlipSound() {
         try {
             flipMediaPlayer?.release()

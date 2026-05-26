@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.a6times.data.WordItem
 import com.example.a6times.data.WordsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -24,12 +25,22 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
+/**
+ * Ana kelime listesi için RecyclerView adaptörü.
+ * Moduna göre (Düzenleme veya Silme) farklı işlevler sunar.
+ * 
+ * @property wordList Görüntülenecek kelime öğelerinin listesi.
+ */
 class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Adapter<WordAdapter.WordViewHolder>() {
 
+    /** Düzenleme modu aktif mi? (true: düzenleme, false: silme) */
     var isEditMode: Boolean = false
     private var currentDialogImageView: ImageView? = null
     private var selectedImageUri: Uri? = null
 
+    /**
+     * Kelime öğesinin görünüm bileşenlerini tutan ViewHolder sınıfı.
+     */
     class WordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvWordText: TextView = view.findViewById(R.id.tvWordText)
         val tvWordPercent: TextView = view.findViewById(R.id.tvWordPercent)
@@ -44,8 +55,9 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         val currentWord = wordList[position]
-        holder.tvWordText.text = currentWord.wordText
+        holder.tvWordText.text = currentWord.text
 
+        // İlerleme yüzdesini ve çubuğunu hesapla
         val res = currentWord.progress * 16.7
         holder.tvWordPercent.text = "%" + "%.0f".format(res)
         holder.pbWordProgress.progress = (currentWord.progress * 17).toInt()
@@ -54,6 +66,7 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
         val wordsRepository = WordsRepository()
 
         if (isEditMode) {
+            // Düzenleme Modu: Kalem ikonu göster ve düzenleme diyalogunu aç
             holder.btnDeleteRow.setImageResource(android.R.drawable.ic_menu_edit)
             holder.btnDeleteRow.setOnClickListener {
                 val actualPosition = holder.adapterPosition
@@ -69,6 +82,7 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
                         setPadding(60, 40, 60, 20)
                     }
 
+                    // Girdi alanlarını oluştur
                     val tvEngLabel = TextView(context).apply { text = "İngilizce Kelime"; textStyleBold() }
                     val etEng = EditText(context).apply { hint = "Örn: Apple" }
 
@@ -96,6 +110,7 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
                         }
                     }
 
+                    // Yerleşime ekle
                     layout.addView(tvEngLabel)
                     layout.addView(etEng)
                     layout.addView(tvTurLabel)
@@ -108,6 +123,7 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
                     layout.addView(ivDialogImage)
                     layout.addView(btnSelectImg)
 
+                    // Mevcut verileri çek ve alanlara yerleştir
                     wordsRepository.getWordDetails(targetWord.id) { word ->
                         if (word != null) {
                             etEng.setText(word.engWordName)
@@ -150,6 +166,7 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
 
                     builder.setView(layout)
 
+                    // Güncelleme işlemi
                     builder.setPositiveButton("Güncelle") { _, _ ->
                         val newEng = etEng.text.toString().trim()
                         val newTur = etTur.text.toString().trim()
@@ -191,6 +208,7 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
                 }
             }
         } else {
+            // Silme Modu: Çöp kutusu ikonu göster ve silme onayı iste
             holder.btnDeleteRow.setImageResource(android.R.drawable.ic_menu_delete)
             holder.btnDeleteRow.setOnClickListener {
                 androidx.appcompat.app.AlertDialog.Builder(context)
@@ -223,6 +241,13 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
 
     override fun getItemCount(): Int = wordList.size
 
+    /**
+     * Seçilen görseli dahili depolamaya kopyalar.
+     * 
+     * @param context Uygulama bağlamı.
+     * @param uri Görsel URI.
+     * @return Kopyalanan dosya URI.
+     */
     private fun copyImageToInternalStorage(context: android.content.Context, uri: Uri): Uri? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
@@ -238,6 +263,9 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
         }
     }
 
+    /**
+     * Görsel seçim sonucunu işler.
+     */
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 999 && resultCode == Activity.RESULT_OK && data != null) {
             val uri = data.data
@@ -260,11 +288,17 @@ class WordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Ad
         }
     }
 
+    /**
+     * Metin stilini kalın yapar.
+     */
     private fun TextView.textStyleBold() {
         this.setTypeface(null, android.graphics.Typeface.BOLD)
         this.textSize = 14f
     }
 
+    /**
+     * Bileşene kenar boşluğu ekler.
+     */
     private fun TextView.setMargins(left: Int, top: Int, right: Int, bottom: Int) {
         val lp = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,

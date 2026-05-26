@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Wordle (Kelime Bulmaca) Oyunu Layout Dosyası -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -6,6 +7,7 @@
     android:background="#08080C"
     android:padding="16dp">
 
+    <!-- Üst Bölüm: Geri Butonu ve Oyun Başlığı -->
     <ImageButton
         android:id="@+id/WordBackButton"
         android:layout_width="44dp"
@@ -32,6 +34,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/WordBackButton" />
 
+    <!-- Orta Bölüm: Oyun Izgarası (Grid) -->
     <HorizontalScrollView
         android:id="@+id/hsvWordle"
         android:layout_width="match_parent"
@@ -56,6 +59,7 @@
         </GridLayout>
     </HorizontalScrollView>
 
+    <!-- Alt Bölüm: Tahmin Giriş Alanı ve Butonu -->
     <LinearLayout
         android:id="@+id/linearLayoutInput"
         android:layout_width="match_parent"
@@ -89,6 +93,7 @@
             app:cornerRadius="12dp" />
     </LinearLayout>
 
+    <!-- Efekt Katmanı: Kutlama Konfetisi -->
     <nl.dionsegijn.konfetti.xml.KonfettiView
         android:id="@+id/konfettiView"
         android:layout_width="match_parent"

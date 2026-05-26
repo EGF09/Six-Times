@@ -13,7 +13,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import com.example.a6times.R
-import com.example.a6times.WordActivity
 import com.example.a6times.data.Words
 import com.example.a6times.data.WordsRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -22,11 +21,17 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
+/**
+ * Yeni kelime ekleme veya mevcut bir kelimeyi düzenleme ekranı.
+ */
 class AddWordActivity : AppCompatActivity() {
     private val wordRepo = WordsRepository()
     private var selectedImageUri: Uri? = null
     private var editWordId: String? = null
 
+    /**
+     * Seçilen görseli uygulamanın dahili depolama alanına kopyalar.
+     */
     private fun copyImageToInternalStorage(uri: Uri): Uri? {
         return try {
             val inputStream = contentResolver.openInputStream(uri) ?: return null
@@ -42,6 +47,7 @@ class AddWordActivity : AppCompatActivity() {
         }
     }
 
+    /** Görsel seçme işlemini başlatan launcher */
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -54,8 +60,6 @@ class AddWordActivity : AppCompatActivity() {
                 ivSelectedImage.visibility = ImageView.VISIBLE
                 ivSelectedImage.load(selectedImageUri) {
                     crossfade(true)
-                    placeholder(android.R.color.transparent)
-                    error(android.R.color.transparent)
                 }
             } else {
                 Toast.makeText(this, "Resim kopyalanamadı!", Toast.LENGTH_SHORT).show()
@@ -79,10 +83,12 @@ class AddWordActivity : AppCompatActivity() {
         val btnSelectImage = findViewById<Button>(R.id.btnSelectImage)
         val btnSave = findViewById<Button>(R.id.btnSaveWord)
 
+        // Eğer düzenleme modundaysak gelen ID'yi al
         editWordId = intent.getStringExtra("EDIT_WORD_ID")
 
         if (editWordId != null) {
             btnSave.text = "Güncelle"
+            // Mevcut kelime verilerini çek ve alanları doldur
             wordRepo.getWordDetails(editWordId!!) { word ->
                 if (word != null) {
                     etEngWord.setText(word.engWordName)
@@ -92,13 +98,12 @@ class AddWordActivity : AppCompatActivity() {
                     if (word.picture.isNotEmpty()) {
                         selectedImageUri = Uri.parse(word.picture)
                         ivSelectedImage.visibility = ImageView.VISIBLE
-                            ivSelectedImage.load(selectedImageUri) {
-                                crossfade(true)
-                                placeholder(android.R.color.transparent)
-                                error(android.R.color.transparent)
-                            }
+                        ivSelectedImage.load(selectedImageUri) {
+                            crossfade(true)
+                        }
                     }
 
+                    // Örnek cümleleri Firebase'den çek
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                     if (userId != null) {
                         FirebaseDatabase.getInstance("https://six-times-228d1-default-rtdb.europe-west1.firebasedatabase.app")
@@ -123,9 +128,7 @@ class AddWordActivity : AppCompatActivity() {
             }
         }
 
-        btnBack.setOnClickListener {
-            finish()
-        }
+        btnBack.setOnClickListener { finish() }
 
         btnSelectImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
@@ -138,12 +141,14 @@ class AddWordActivity : AppCompatActivity() {
             val samplesInput = etSamples.text.toString().trim()
             val picturePath = selectedImageUri?.toString() ?: ""
 
+            // Girdi doğrulaması
             if (engWordInput.isEmpty() || turWordInput.isEmpty() || categoryInput.isEmpty() || samplesInput.isEmpty()) {
                 Toast.makeText(this, "Lütfen tüm alanları doldurun.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (editWordId != null) {
+                // Güncelleme işlemi
                 val samplesList = samplesInput.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
                 val samplesMap = mutableMapOf<String, Any>()
                 var startId = System.currentTimeMillis().toInt()
@@ -167,6 +172,7 @@ class AddWordActivity : AppCompatActivity() {
                     }
                 )
             } else {
+                // Yeni kayıt işlemi
                 val newWord = Words(
                     engWordName = engWordInput,
                     turWordName = turWordInput,
@@ -189,6 +195,9 @@ class AddWordActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * İşlem başarılı olduğunda kullanıcıya geri bildirim veren diyalog.
+     */
     private fun showSuccessDialog(
         etEngWord: EditText,
         etTurWord: EditText,
@@ -216,6 +225,7 @@ class AddWordActivity : AppCompatActivity() {
             }
             builder.setNegativeButton("Yeni Kelime Ekle") { dialog, _ ->
                 dialog.dismiss()
+                // Alanları temizle
                 etEngWord.text.clear()
                 etTurWord.text.clear()
                 etCategory.text.clear()

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Ana Ekran (Home) Layout Dosyası -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -13,6 +14,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Üst Bölüm: Karşılama, Seri (Streak) ve Ayarlar -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,6 +29,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tvWelcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Hoş Geldin!"
@@ -70,6 +73,7 @@
                 app:tint="#00F0FF" />
         </RelativeLayout>
 
+        <!-- İlerleme Özeti Kartı -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -115,6 +119,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Ana Menü Butonları -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStartQuiz"
             android:layout_width="match_parent"
@@ -171,6 +176,7 @@
             app:backgroundTint="@null"
             app:cornerRadius="25dp" />
 
+        <!-- Yapay Zeka Hikaye Bölümü -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

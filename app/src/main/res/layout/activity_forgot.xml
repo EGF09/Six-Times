@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Şifremi Unuttum Ekranı Layout Dosyası -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,6 +9,7 @@
     android:background="#08080C"
     tools:context=".loginnav.ForgotActivity">
 
+    <!-- Üst Bölüm: Geri Butonu -->
     <ImageButton
         android:id="@+id/ForgotBackButton"
         android:layout_width="44dp"
@@ -21,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#00F0FF" />
 
+    <!-- Orta Bölüm: Bilgilendirme ve Giriş Alanı -->
     <LinearLayout
         android:id="@+id/inputContainer"
         android:layout_width="match_parent"
@@ -49,6 +52,7 @@
             android:gravity="center"
             android:layout_marginBottom="32dp"/>
 
+        <!-- E-posta Giriş Alanı -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,6 +85,7 @@
 
     </LinearLayout>
 
+    <!-- Alt Bölüm: Aksiyon Butonu -->
     <Button
         android:id="@+id/ChangePasswordButton"
         android:layout_width="match_parent"

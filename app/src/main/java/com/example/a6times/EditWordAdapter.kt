@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.a6times.R
-import com.example.a6times.WordItem
+import com.example.a6times.data.WordItem
 import com.example.a6times.data.WordsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -22,16 +22,25 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
+/**
+ * Kelime düzenleme ekranı için RecyclerView adaptörü.
+ * Kelimelerin listelenmesini ve düzenleme diyalogunun açılmasını sağlar.
+ * 
+ * @property wordList Düzenlenecek kelimelerin listesi.
+ */
 class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerView.Adapter<EditWordAdapter.EditViewHolder>() {
 
     private var currentDialogImageView: ImageView? = null
     private var selectedImageUri: android.net.Uri? = null
 
+    /**
+     * Kelime öğesinin görünüm bileşenlerini tutan ViewHolder sınıfı.
+     */
     class EditViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvWordText: TextView = view.findViewById(R.id.tvWordText)
         val tvWordPercent: TextView = view.findViewById(R.id.tvWordPercent)
         val pbWordProgress: ProgressBar = view.findViewById(R.id.pbWordProgress)
-        val btnDeleteRow: ImageButton = view.findViewById(R.id.btnDeleteRow) // Bu butonu KALEM olarak kullanacağız
+        val btnDeleteRow: ImageButton = view.findViewById(R.id.btnDeleteRow) // Kalem ikonu olarak kullanılıyor
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditViewHolder {
@@ -41,24 +50,26 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
 
     override fun onBindViewHolder(holder: EditViewHolder, position: Int) {
         val currentWord = wordList[position]
-        holder.tvWordText.text = currentWord.wordText
+        holder.tvWordText.text = currentWord.text
 
+        // İlerleme hesaplaması ve görselleştirilmesi
         val res = currentWord.progress * 16.7
         holder.tvWordPercent.text = "%" + "%.0f".format(res)
         holder.pbWordProgress.progress = (currentWord.progress * 17).toInt()
 
-        // Çöp kutusu görselini kodla KALEM (edit) görseline dönüştürüyoruz
+        // İkonu düzenleme (kalem) ikonuna çevir
         holder.btnDeleteRow.setImageResource(android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI.let {
             android.R.drawable.ic_menu_edit
         })
 
+        // Düzenleme butonuna tıklama işlemi
         holder.btnDeleteRow.setOnClickListener {
             val context = holder.itemView.context
             val wordsRepository = WordsRepository()
 
             selectedImageUri = null
 
-            // Pop-up (Diyalog) Tasarımı oluşturuyoruz
+            // Düzenleme Diyalogu Tasarımı
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Kelimeyi Düzenle")
 
@@ -67,6 +78,7 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
                 setPadding(60, 40, 60, 20)
             }
 
+            // Girdi alanlarının tanımlanması
             val tvEngLabel = TextView(context).apply { text = "İngilizce Kelime"; setTypeface(null, android.graphics.Typeface.BOLD) }
             val etEng = EditText(context).apply { hint = "Örn: Apple" }
 
@@ -94,6 +106,7 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
                 }
             }
 
+            // Bileşenleri yerleşime ekle
             layout.addView(tvEngLabel)
             layout.addView(etEng)
             layout.addView(tvTurLabel)
@@ -106,6 +119,7 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
             layout.addView(ivDialogImage)
             layout.addView(btnSelectImg)
 
+            // Mevcut kelime verilerini getir ve alanları doldur
             wordsRepository.getWordDetails(currentWord.id) { word ->
                 if (word != null) {
                     etEng.setText(word.engWordName)
@@ -122,6 +136,7 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
                         }
                     }
 
+                    // Örnek cümleleri Firebase'den çek
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                     if (userId != null) {
                         FirebaseDatabase.getInstance("https://six-times-228d1-default-rtdb.europe-west1.firebasedatabase.app")
@@ -148,6 +163,7 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
 
             builder.setView(layout)
 
+            // Güncelleme işlemi
             builder.setPositiveButton("Güncelle") { _, _ ->
                 val newEng = etEng.text.toString().trim()
                 val newTur = etTur.text.toString().trim()
@@ -159,12 +175,14 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
                     val samplesList = newSamples.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
                     val samplesMap = mutableMapOf<String, Any>()
 
+                    // Yeni örnek cümle haritasını oluştur
                     var startId = System.currentTimeMillis().toInt()
                     for ((index, sampleText) in samplesList.withIndex()) {
                         val sid = startId + index
                         samplesMap[sid.toString()] = mapOf("sampleID" to sid, "sample" to sampleText)
                     }
 
+                    // Veritabanını güncelle
                     wordsRepository.updateWordInFirebase(
                         wordId = currentWord.id,
                         newEngName = newEng,
@@ -191,6 +209,13 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
 
     override fun getItemCount(): Int = wordList.size
 
+    /**
+     * Seçilen görseli uygulamanın dahili depolama alanına kopyalar.
+     * 
+     * @param context Uygulama bağlamı.
+     * @param uri Seçilen görselin URI değeri.
+     * @return Kopyalanan dosyanın yeni URI değeri.
+     */
     private fun copyImageToInternalStorage(context: android.content.Context, uri: android.net.Uri): android.net.Uri? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
@@ -206,6 +231,13 @@ class EditWordAdapter(private val wordList: MutableList<WordItem>) : RecyclerVie
         }
     }
 
+    /**
+     * Görsel seçme işleminden dönen sonucu işler.
+     * 
+     * @param requestCode İstek kodu.
+     * @param resultCode Sonuç kodu.
+     * @param data Dönen veri.
+     */
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
         if (requestCode == 998 && resultCode == android.app.Activity.RESULT_OK && data != null) {
             val uri = data.data

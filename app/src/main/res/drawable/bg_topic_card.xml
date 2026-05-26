@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Konu (Topic) kartları için sade koyu arka plan -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Koyu gri dolgu -->
     <solid android:color="#1A1A1A" />
+    <!-- Orta dereceli köşe yuvarlama -->
     <corners android:radius="15dp" />
 </shape>

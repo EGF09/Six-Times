@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Neon temalı geri butonu veya dairesel arka plan -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- İç dolgu rengi (Çok koyu lacivert) -->
     <solid android:color="#12121A" />
+    <!-- Neon Turkuaz kenarlık -->
     <stroke
         android:width="2dp"
         android:color="#00F0FF" />
+    <!-- Tam yuvarlak köşeler -->
     <corners android:radius="100dp" />
 </shape>

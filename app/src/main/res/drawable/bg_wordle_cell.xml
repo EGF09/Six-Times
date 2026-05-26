@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Wordle oyunundaki harf kutucuklarının arka planı -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#12121A" /> <stroke
-    android:width="2dp"
-    android:color="#00F0FF" /> <corners android:radius="8dp" />
+    <!-- Koyu lacivert dolgu -->
+    <solid android:color="#12121A" /> 
+    <!-- Neon Turkuaz kenarlık -->
+    <stroke
+        android:width="2dp"
+        android:color="#00F0FF" /> 
+    <!-- Hafif köşe yuvarlama -->
+    <corners android:radius="8dp" />
 </shape>

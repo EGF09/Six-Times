@@ -18,6 +18,10 @@ import com.example.a6times.data.WordsRepository
 import com.example.a6times.menunav.AnalysisActivity
 import com.google.android.material.button.MaterialButton
 
+/**
+ * Kelime sınavı uygulamasının temel mantığını yürüten ekran.
+ * Kelimeleri havuzdan seçer, soruları oluşturur ve ilerlemeyi kaydeder.
+ */
 class ExamActivity : AppCompatActivity() {
 
     private val PRIMARY_COLOR = "#00F0FF"
@@ -61,6 +65,7 @@ class ExamActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
 
+        // Görünüm bileşenlerini tanımla
         tvQuestionCount = findViewById(R.id.tvQuestionCount)
         tvQuestionWord = findViewById(R.id.tvQuestionWord)
 
@@ -79,21 +84,21 @@ class ExamActivity : AppCompatActivity() {
 
         btnNextQuestion.isEnabled = false
 
-        btnFinishExam.setOnClickListener {
-            showFinishDialog()
-        }
+        btnFinishExam.setOnClickListener { showFinishDialog() }
 
         btnNextQuestion.setOnClickListener {
             if (!isAnswerChecked) checkAnswer()
             else goToNextQuestion()
         }
 
+        // Görseli aç/kapat butonu
         btnToggleImage.setOnClickListener {
             isImageVisible = !isImageVisible
             ivQuestionImage.visibility = if (isImageVisible) View.VISIBLE else View.GONE
             btnToggleImage.text = if (isImageVisible) "Görseli Kapat" else "Görseli Aç"
         }
 
+        // İpucu cümlesini aç/kapat butonu
         btnToggleHint.setOnClickListener {
             isHintVisible = !isHintVisible
             tvHintSentence.visibility = if (isHintVisible) View.VISIBLE else View.GONE
@@ -101,16 +106,19 @@ class ExamActivity : AppCompatActivity() {
         }
 
         val options = listOf(btnOption1, btnOption2, btnOption3)
-
         options.forEachIndexed { index, button ->
             button.setOnClickListener {
                 if (!isAnswerChecked) selectOption(index)
             }
         }
 
+        // Kelimeleri yükle ve sınavı başlat
         loadWords()
     }
 
+    /**
+     * Veritabanından kelimeleri çeker ve sınav limitine göre filtreler.
+     */
     private fun loadWords() {
         wordsRepository.getWordsOnce(
             onDataChange = { words ->
@@ -139,15 +147,20 @@ class ExamActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Rastgele seçilen kelimelerle sınavı başlatır.
+     */
     private fun startExam(readyWords: List<Words>, limit: Int) {
         examWords = readyWords.shuffled().take(limit)
         currentQuestionIndex = 0
         correctAnswersCount = 0
-
         examProgressBar.max = examWords.size
         loadQuestion()
     }
 
+    /**
+     * Mevcut soru indeksindeki kelimeyi yükler ve arayüzü hazırlar.
+     */
     private fun loadQuestion() {
         if (currentQuestionIndex >= examWords.size) {
             showExamCompleteDialog()
@@ -156,18 +169,15 @@ class ExamActivity : AppCompatActivity() {
 
         isAnswerChecked = false
         selectedOptionIndex = -1
-
         btnNextQuestion.text = "Kontrol Et"
         btnNextQuestion.isEnabled = false
 
         currentWord = examWords[currentQuestionIndex]
-
         tvQuestionWord.text = currentWord.engWordName
         tvQuestionCount.text = "Soru: ${currentQuestionIndex + 1} / ${examWords.size}"
-
         examProgressBar.progress = currentQuestionIndex
 
-        // Reset toggles for the new question
+        // Arayüzü sıfırla
         isImageVisible = false
         isHintVisible = false
         ivQuestionImage.visibility = View.GONE
@@ -176,7 +186,7 @@ class ExamActivity : AppCompatActivity() {
         btnToggleHint.text = "İpucu Cümlesi"
         tvHintSentence.text = ""
 
-        // Handle Image
+        // Görsel yükleme
         btnToggleImage.visibility = View.VISIBLE
         if (currentWord.picture.isNotEmpty()) {
             ivQuestionImage.load(currentWord.picture) {
@@ -185,13 +195,10 @@ class ExamActivity : AppCompatActivity() {
                 error(android.R.color.transparent)
             }
         } else {
-            // Load a default warning/question mark image if no picture is available
-            ivQuestionImage.load(android.R.drawable.ic_menu_help) {
-                crossfade(true)
-            }
+            ivQuestionImage.load(android.R.drawable.ic_menu_help) { crossfade(true) }
         }
 
-        // Handle Hint
+        // İpucu cümlelerini getir
         btnToggleHint.visibility = View.GONE
         wordsRepository.getWordSamples(currentWord.wordID) { samples ->
             if (samples.isNotEmpty()) {
@@ -200,6 +207,7 @@ class ExamActivity : AppCompatActivity() {
             }
         }
 
+        // Çeldiricileri oluştur
         val wrong = allWords
             .filter { it.wordID != currentWord.wordID }
             .shuffled()
@@ -221,20 +229,21 @@ class ExamActivity : AppCompatActivity() {
         resetUI()
     }
 
+    /**
+     * Bir seçeneği işaretler ve vurgular.
+     */
     private fun selectOption(index: Int) {
         selectedOptionIndex = index
         btnNextQuestion.isEnabled = true
-
         resetUI()
-
         val buttons = listOf(btnOption1, btnOption2, btnOption3)
-
-        buttons[index].strokeColor =
-            ColorStateList.valueOf(Color.parseColor(PRIMARY_COLOR))
-
+        buttons[index].strokeColor = ColorStateList.valueOf(Color.parseColor(PRIMARY_COLOR))
         buttons[index].setTextColor(Color.parseColor(PRIMARY_COLOR))
     }
 
+    /**
+     * Seçeneklerin renk ve vurgularını temizler.
+     */
     private fun resetUI() {
         val buttons = listOf(btnOption1, btnOption2, btnOption3)
         buttons.forEach {
@@ -244,45 +253,34 @@ class ExamActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Seçilen cevabın doğruluğunu kontrol eder ve puanı günceller.
+     */
     private fun checkAnswer() {
         if (selectedOptionIndex == -1) return
 
         isAnswerChecked = true
         btnNextQuestion.text = "Sonraki"
-
         val buttons = listOf(btnOption1, btnOption2, btnOption3)
-
         val selected = currentOptions[selectedOptionIndex]
         val correct = currentWord.turWordName
-
         val correctIndex = currentOptions.indexOf(correct)
 
         if (selected == correct) {
             playRawSound(R.raw.correct_sound)
-
-            buttons[selectedOptionIndex].strokeColor =
-                ColorStateList.valueOf(Color.parseColor("#4CAF50"))
-
+            buttons[selectedOptionIndex].strokeColor = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
             buttons[selectedOptionIndex].setTextColor(Color.parseColor("#4CAF50"))
-
             correctAnswersCount++
-
         } else {
             playRawSound(R.raw.exam_fail)
-
-            buttons[selectedOptionIndex].strokeColor =
-                ColorStateList.valueOf(Color.parseColor("#F44336"))
-
+            buttons[selectedOptionIndex].strokeColor = ColorStateList.valueOf(Color.parseColor("#F44336"))
             buttons[selectedOptionIndex].setTextColor(Color.parseColor("#F44336"))
-
             if (correctIndex != -1) {
-                buttons[correctIndex].strokeColor =
-                    ColorStateList.valueOf(Color.parseColor("#4CAF50"))
-
+                buttons[correctIndex].strokeColor = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
                 buttons[correctIndex].setTextColor(Color.parseColor("#4CAF50"))
             }
         }
-
+        // İlerlemeyi veritabanında güncelle
         wordsRepository.updateWordProgress(currentWord, selected == correct)
     }
 
@@ -295,9 +293,7 @@ class ExamActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Sınavı Bitir")
             .setMessage("Sınavı bitir ve başarı analiz raporunu görüntüle?")
-            .setPositiveButton("Evet") { _, _ ->
-                finishExam()
-            }
+            .setPositiveButton("Evet") { _, _ -> finishExam() }
             .setNegativeButton("Devam Et", null)
             .show()
     }
@@ -307,12 +303,8 @@ class ExamActivity : AppCompatActivity() {
             .setTitle("Sınav Tamamlandı! 🎉")
             .setMessage("Tebrikler, sınavı başarıyla bitirdiniz! Başarı analiz raporunuzu görüntülemek ister misiniz?")
             .setCancelable(false)
-            .setPositiveButton("Raporu Gör") { _, _ ->
-                finishExam()
-            }
-            .setNegativeButton("Daha Sonra") { _, _ ->
-                finish()
-            }
+            .setPositiveButton("Raporu Gör") { _, _ -> finishExam() }
+            .setNegativeButton("Daha Sonra") { _, _ -> finish() }
             .show()
     }
 
@@ -324,19 +316,16 @@ class ExamActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Ses efektlerini çalar.
+     */
     private fun playRawSound(resourceId: Int) {
         try {
             mediaPlayer?.stop()
             mediaPlayer?.release()
-            mediaPlayer = null
-
             mediaPlayer = MediaPlayer.create(this, resourceId)
-            mediaPlayer?.setOnPreparedListener { mp ->
-                mp.start()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+            mediaPlayer?.setOnPreparedListener { it.start() }
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
     override fun onDestroy() {

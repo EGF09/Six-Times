@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Sınav (Test) Ekranı Layout Dosyası -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,6 +8,7 @@
     android:background="#08080C"
     android:padding="24dp">
 
+    <!-- Üst Bölüm: İlerleme Çubuğu ve Soru Sayacı -->
     <ProgressBar
         android:id="@+id/examProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -28,6 +30,7 @@
         app:layout_constraintTop_toBottomOf="@id/examProgressBar"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- Orta Bölüm: Soru Kartı (Resim ve Kelime) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/questionCard"
         android:layout_width="0dp"
@@ -44,35 +47,36 @@
             android:layout_height="match_parent"
             android:background="@drawable/bg_neon_card">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/ivQuestionImage"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:visibility="gone"
-                android:alpha="0.4" />
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tvQuestionWord"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Adventure"
-                android:textColor="#FFFFFF"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:shadowColor="#000000"
-                android:shadowDx="2"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-        </FrameLayout>
+                <ImageView
+                    android:id="@+id/ivQuestionImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:alpha="0.4" />
+
+                <TextView
+                    android:id="@+id/tvQuestionWord"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Adventure"
+                    android:textColor="#FFFFFF"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="4" />
+            </FrameLayout>
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Yardımcı Alan: İpucu Butonları ve Metni -->
     <LinearLayout
         android:id="@+id/hintContainer"
         android:layout_width="0dp"
@@ -131,6 +135,7 @@
             android:textStyle="italic" />
     </LinearLayout>
 
+    <!-- Seçenekler Bölümü: Çoktan Seçmeli Şıklar -->
     <LinearLayout
         android:id="@+id/optionsContainer"
         android:layout_width="0dp"
@@ -192,6 +197,7 @@
             app:rippleColor="#2200F0FF" />
     </LinearLayout>
 
+    <!-- Alt Bölüm: Kontrol Butonları -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNextQuestion"
         android:layout_width="wrap_content"

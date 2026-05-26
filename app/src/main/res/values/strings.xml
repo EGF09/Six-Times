@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">6Times</string>
+    <!-- Uygulama Genelindeki Metinler -->
+    <string name="app_name">6Times</string> <!-- Uygulama Adı -->
 </resources>

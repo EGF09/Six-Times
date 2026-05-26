@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Kelime Listesi İçin Öğe (Item) Tasarımı -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,6 +17,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Kelime Satırı: Metin, Başarı Yüzdesi ve Silme Butonu -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -56,6 +58,7 @@
                 android:contentDescription="Kelimeyi Sil" />
         </RelativeLayout>
 
+        <!-- Kelime Başarı İlerleme Çubuğu -->
         <ProgressBar
             android:id="@+id/pbWordProgress"
             style="?android:attr/progressBarStyleHorizontal"
