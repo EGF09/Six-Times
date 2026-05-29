@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a6times.R
+import com.example.a6times.adapters.EditWordAdapter
 import com.example.a6times.data.WordItem
 import com.example.a6times.data.WordsRepository
 

@@ -10,9 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import coil.load
-import com.example.a6times.ExamActivity
 import com.example.a6times.R
-import com.example.a6times.WordleActivity
 import com.example.a6times.data.UsersRepository
 import com.example.a6times.data.WordsRepository
 import com.example.a6times.utils.Constants

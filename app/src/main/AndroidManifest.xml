@@ -46,7 +46,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".WordleActivity"
+            android:name=".menunav.WordleActivity"
             android:exported="false" />
 
         <activity
@@ -54,7 +54,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ExamActivity"
+            android:name=".menunav.ExamActivity"
             android:exported="false" />
 
         <activity

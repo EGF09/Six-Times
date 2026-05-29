@@ -14,8 +14,8 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a6times.R
-import com.example.a6times.TopicProgressAdapter
-import com.example.a6times.WordAdapter
+import com.example.a6times.adapters.TopicProgressAdapter
+import com.example.a6times.adapters.WordAdapter
 import com.example.a6times.data.WordItem
 import java.io.File
 import java.io.FileOutputStream

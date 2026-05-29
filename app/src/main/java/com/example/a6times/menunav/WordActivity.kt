@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.a6times.R
-import com.example.a6times.WordAdapter
+import com.example.a6times.adapters.WordAdapter
 import com.example.a6times.data.WordItem
 import com.example.a6times.data.WordsRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
